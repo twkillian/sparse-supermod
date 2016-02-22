@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval, algorithm, algorithmic}
+\usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval, algorithm, algorithmic,xcolor}
 \captionsetup{justification=centering}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\C}{\mathcal{C}}
@@ -20,31 +20,48 @@
 As noted above, this project is to be completed by Taylor Killian and Leonhard Spiegelberg with careful guidance by Prof. Singer. We anticipate that this project will take our full coordinated effort to complete a worthwhile result by the end of the semester. We have already begun trying to understand the literature and underlying structure of the Sparse Regression/Dictionary Selection problem formulation, including all assumptions that have been made to facilitate approximate solutions. We anticipate that multiple meetings per week will be necessary to ensure consistent progress. 
 
 \section{Model/Problem} \label{model}
-Introduce the problem and it's complexities
+Sparse Regression/Dictionary Selection is a class of problems that are variants of representation learning. The goal of these kinds of problems is to determine a sparse representation of input data in the form of a linear combination of basis elements as well as the basis elements themselves. That is, one essentially factors the input matrix in a sparse catalog and a dictionary of basis elements both of which need to be inferred from the data.
+\newline
 
-Here we'll want to add some information about Sparse regression, set functions and definitions of sub modular and super modular, Dictionary Selection, Greedy Methods, etc.
+\noindent More formally this problem has been defined as follows:
+\newline
+
+Given $\mathcal{X} = [x_1,\dots , x_k], \ x_i\in\R^d$, we wish to find a dictionary $\mathcal{D}\in\R^{d \times n}$ and a representation $\mathcal{R} = [r_1, \dots, r_k], \ r_i\in\R^n$ such that: $$\|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \text{ is minimized and } \mathcal{R} \text{ is sparse enough.}$$
+
+\noindent Which can be reclassified as an optimization problem: $$\argmin_{\mathcal{D}\in\mathcal{C}, r_i\in\R^n} \sum_{i=1}^k \|x_i - \mathcal{D}r_i\|_2^2 + \lambda\|r_i\|_0$$
+where $\mathcal{C} = \left\{\mathcal{D}\in\R^{d \times n} : \|d_i\|_2 \leq 1, \forall i=1, \dots, n\right\}$.
+
+\noindent We abstract some of the functional definitions from the above statement so as to represent the optimization problem in a more general form:
+\begin{alignat*}{4}
+    &\text{minimize }   & F(a) & \\
+    &\text{subject to } & \text{support}(a)&\subseteq S\\
+    &                   & |S|  &\leq t\\
+\end{alignat*}
+	
 
 \subsection{Related Work}
-A simple overview of prior work
+\textcolor{red}{A simple overview of prior work, highlighting the assumptions that have been made over time, especially the submodular function representation and resulting convex relaxation. This will lead to a discussion on greedy algorithms and the continuous greedy algorithm.}
 
 \section{Data}
-
+We are not yet aware of common data sets used in Sparse Regression/Dictionary Selection problems. As we are looking to develop a novel algorithm to provide a new benchmark for approximate solutions to this class of problems, we will likely assimilate the data and experiments used in  \cite{submod_spectral}, \cite{greedy_selection}, \cite{rIBP}, among others. 
 
 \section{Deliverables} \label{methods}
+As a result of this project, we anticipate that we will develop a novel greedy algorithm that operates on the approximation of supermodular functions within a convex relaxation of the Sparse Regression/Dictionary Selection problem. Implicit in the development of this algorithm will be several statements and definitions that recast the Sparse Regression/Dictionary Selection problem in terms of supermodular functions. In order to do so, we will need to develop a robust analog between Dictionary Selection and 2-stage sparse regression.
 
-Place holder section to begin to outline our work
+Our ultimate goal is to submit this work to the 2016 NIPS conference. The deadline for submissions is on 20 May 2016, which will provide us approximately 3 weeks after the final deadline for this course to clean up our presentation of our assumptions, methodology and model/algorithms.
 
 \section{Next Steps} \label{next steps}
 
-What we've got to do!
+\textcolor{red}{What we've got to do!
+\begin{itemize}
+\item{Show sparse regression as supermodular minimization}
+\item{Show Dictionary Selection as 2-stage sparse regression}
+\item{Understand greedy algorithm of submodular maximization}
+\item{Understand the continuous greedy algorithm}
+\item{Read + understand 2-stage submodular optimization}
+\item{ATTACK!}
+\end{itemize}}
 
-
-\section{Conclusions \& Future Work}
-\subsection{Conclusions}
-We will have done it!
- 
-\subsection{Future Work}
-Rule the world 
 
 \begin{thebibliography}{99}
   \bibitem{submod_spectral}
