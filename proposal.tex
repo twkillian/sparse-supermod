@@ -1,10 +1,15 @@
 \documentclass{article}
 \usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval, algorithm, algorithmic,xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+
 \captionsetup{justification=centering}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\C}{\mathcal{C}}
 \newcommand{\X}{\mathcal{X}}
 \DeclareMathOperator*{\argmin}{\arg\!\min}
+
+\onehalfspacing
 
 \begin{document}
 \title{AM221 Final Project Proposal \\ \large Dictionary Selection Under a Supermodular Assumption}
@@ -74,21 +79,25 @@ We are not yet aware of common data sets used in Sparse Regression/Dictionary Se
 
 \section{Deliverables} \label{methods}
 As a result of this project, we anticipate that we will develop a novel greedy algorithm that operates on the approximation of supermodular functions within a convex relaxation of the Sparse Regression/Dictionary Selection problem. Implicit in the development of this algorithm will be several statements and definitions that recast the Sparse Regression/Dictionary Selection problem in terms of supermodular functions. In order to do so, we will need to develop a robust analog between Dictionary Selection and 2-stage sparse regression.
-
+\\
+\\
 Our ultimate goal is to submit this work to the 2016 NIPS conference. The deadline for submissions is on 20 May 2016, which will provide us approximately 3 weeks after the final deadline for this course to clean up our presentation of our assumptions, methodology and model/algorithms.
 
 \section{Next Steps} \label{next steps}
+Our first step in this project will be to understand the supermodular minimzation framework in which sparse regression can be defined. Then, after having connected and identified sparse regression as supermodular minimization problem we want to show that dictionary selection is a 2-stage sparse regression. \\
+\\
+In the following step we need to understand the greedy algorithm for submodular maximization and its improvement, the continuous greedy algorithm. After this, understanding 2-stage submodular optimization would ideally allow us to connect the pieces, gain insight and finally propose a new algorithm of dealing with the problem.
 
-\textcolor{red}{What we've got to do!
-\begin{itemize}
-\item{Show sparse regression as supermodular minimization}
-\item{Show Dictionary Selection as 2-stage sparse regression}
-\item{Understand greedy algorithm of submodular maximization}
-\item{Understand the continuous greedy algorithm}
-\item{Read + understand 2-stage submodular optimization}
-\item{ATTACK!}
-\end{itemize}}
-
+%\textcolor{red}{What we've got to do!
+%\begin{itemize}
+%\item{Show sparse regression as supermodular minimization}
+%\item{Show Dictionary Selection as 2-stage sparse regression}
+%\item{Understand greedy algorithm of submodular maximization}
+%\item{Understand the continuous greedy algorithm}
+%\item{Read + understand 2-stage submodular optimization}
+%\item{ATTACK!}
+%\end{itemize}}
+%
 \bibliographystyle{plain}
 \bibliography{bibliography}
 
