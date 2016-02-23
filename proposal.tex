@@ -41,7 +41,7 @@ One way of stating the problem for (a) is
           \min_{\mathcal{D}, \mathcal{R}} \|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2  + \lambda \sum_{i=1}^k  \|\ r_i\|_0    & \quad  & \\
          \text{s.t.} & \quad  \|d_j\|_2 \leq 1&, \forall j=1, ...,n & \quad 
 \end{alignat}
-with a regularizer on the amount of variables used and a further restriction on the dictionary vectors to avoid scaling problems. The $\| .\|_0$ is hereby defined as the number of non-zero entries making the whole problem computationally difficult to track. A formulation for the case (b) is 
+with a regularizer on the amount of variables used and a further restriction on the dictionary vectors to avoid scaling problems. The $\| .\|_0$ is hereby defined as the number of non-zero entries making the whole problem computationally difficult to track\cite{NPHardproof}. A formulation for the case (b) is 
 \begin{alignat}{5}
           \min_{\mathcal{R}} \sum_{i=1}^k  \|\ r_i\|_0    & \quad  & \\
          \text{s.t.} & \quad  \|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \leq \epsilon & & \quad \\
@@ -60,7 +60,14 @@ with a regularizer on the amount of variables used and a further restriction on 
 	
 
 \subsection{Related Work}
-\textcolor{red}{A simple overview of prior work, highlighting the assumptions that have been made over time, especially the submodular function representation and resulting convex relaxation. This will lead to a discussion on greedy algorithms and the continuous greedy algorithm.}
+In order to tackle the problem whose complexity mainly arises from the $\| .\|_0$ norm, one approach is to relax the norm to a more feasible one (i.e. LASSO, LARS for convex-relaxation or log penalty for non-convex relaxation). However, this might lead to over-penalization\cite{nonconvexrelax}.
+\\
+\\
+Another ansatz is to use a greedy approach which constantly adds or removes variables based on some measure\cite{submod_spectral}.  This can be stated as a maximization problem of a submodular function. A submodular function thereby can be viewed as a discrete analogon to a convex function in the continuous case\cite{submod_sparsecoding}.
+\\
+\\
+Applications of Sparse Dictionary Learning learn from classical Machine Learning (i.e. Linear Sparse Regression), Computer Vision(Image reconstruction, inpainting, denoising) to Signal Processing\cite{nonconvexrelax}\cite{submod_sparsecoding}.
+%\textcolor{red}{A simple overview of prior work, highlighting the assumptions that have been made over time, especially the submodular function representation and resulting convex relaxation. This will lead to a discussion on greedy algorithms and the continuous greedy algorithm.}
 
 \section{Data}
 We are not yet aware of common data sets used in Sparse Regression/Dictionary Selection problems. As we are looking to develop a novel algorithm to provide a new benchmark for approximate solutions to this class of problems, we will likely assimilate the data and experiments used in  \cite{submod_spectral}, \cite{greedy_selection}, \cite{rIBP}, among others. 
@@ -82,26 +89,7 @@ Our ultimate goal is to submit this work to the 2016 NIPS conference. The deadli
 \item{ATTACK!}
 \end{itemize}}
 
+\bibliographystyle{plain}
+\bibliography{bibliography}
 
-\begin{thebibliography}{99}
-  \bibitem{submod_spectral}
-  Das, A., Kempe, D., (2011). Submodular meets Spectral: Greedy Algorithms for Subset Selection, Sparse Approximation and Dictionary Selection. \textit{Proceedings of the 28th International Conference on Machine Learnings}.
-  \bibitem{greedy_selection}
-  Cevher, V., Krause, A., (2011). Greedy Dictionary Selection for Sparse Representation. \textit{Selected Topics in Signal Processing, IEEE Journal of 5} (5), pp. 979 - 988.
-  \bibitem{rIBP}
-  Doshi-Velez, F., Williamson, S., (2015). Restricted Indian Buffet Processes. \textit{In submission}. arXiv:1508.06303 [stat.ME]
-  
-%  @ARTICLE{6873279, 
-%author={Tillmann, A.M.}, 
-%journal={Signal Processing Letters, IEEE}, 
-%title={On the Computational Intractability of Exact and Approximate Dictionary Learning}, 
-%year={2015}, 
-%volume={22}, 
-%number={1}, 
-%pages={45-49}, 
-%keywords={approximation theory;compressed sensing;computational complexity;dictionaries;iterative methods;learning (artificial intelligence);optimisation;signal classification;signal reconstruction;signal representation;vectors;NP-hard sparse recovery problem;approximate dictionary learning algorithm;compressed sensing;computational intractability;data set training;iteration method;sensor permutation problem;signal classification;signal processing application;signal vector reconstruction;sparse signal representation;sparse signal vector coding;Approximation algorithms;Approximation methods;Complexity theory;Dictionaries;Optimization;Signal processing algorithms;Sparse matrices;(SAS-MALN, MLSAS-SPARSE) machine learning;Compressed sensing;computational complexity}, 
-%doi={10.1109/LSP.2014.2345761}, 
-%ISSN={1070-9908}, 
-%month={Jan},}
-\end{thebibliography}
 \end{document}
