@@ -22,10 +22,10 @@
 %\end{abstract}
 
 \section{Collaboration}\label{partnership}
-As noted above, this project is to be completed by Taylor Killian and Leonhard Spiegelberg with careful guidance by Prof. Singer. We anticipate that this project will take our full coordinated effort to complete a worthwhile result by the end of the semester. We have already begun trying to understand the literature and underlying structure of the Sparse Regression/Dictionary Selection problem formulation, including all assumptions that have been made to facilitate approximate solutions. We anticipate that multiple meetings per week will be necessary to ensure consistent progress. 
+As noted above, this project is to be completed by Taylor Killian and Leonhard Spiegelberg under the careful direction of Prof. Singer. We anticipate that this project will take our full coordinated effort to complete a worthwhile result by the end of the semester. We have already begun trying to understand the literature and underlying structure of the Sparse Regression/Dictionary Selection problem formulation, including all assumptions that have been made to facilitate approximate solutions. We anticipate that multiple meetings per week will be necessary to ensure consistent progress. 
 
 \section{Model/Problem} \label{model}
-Sparse Regression / Dictionary Selection is a class of problems that are variants of representation learning. The goal of these kinds of problems is to determine a sparse representation of input data in the form of a linear combination of basis elements as well as the basis elements themselves. That is, one essentially factors the input matrix in a sparse catalog and a dictionary of basis elements both of which need to be inferred from the data.
+Sparse Regression / Dictionary Selection is a class of problems that are variants of representation learning. The goal of these kinds of problems is to determine a sparse representation of input data in the form of a linear combination of basis elements as well as the basis elements themselves. That is, one essentially factors the input matrix into a sparse catalog and a dictionary of basis elements, both of which need to be inferred from the data.
 \newline
 
 \noindent More formally this problem has been defined as follows:
@@ -33,45 +33,45 @@ Sparse Regression / Dictionary Selection is a class of problems that are variant
 
 Given data $\mathcal{X} = [x_1,\dots , x_k], \ x_i\in\R^d$, we wish to find a dictionary $\mathcal{D}\in\R^{d \times n}$ and a representation $\mathcal{R} = [r_1, \dots, r_k], \ r_i\in\R^n$ such that: $$\|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \text{ is minimized and } \mathcal{R} \text{ is sparse enough.}$$
 
-\noindent Depending on the aim of (a) finding a minimal representation for given precision or (b) finding a best approximation using up to $t$ variables the problem can be stated in a most general form as
+\noindent Depending on the aim of (a) finding a minimal representation for given precision or (b) finding a best approximation using up to $t$ variables the problem can be stated more generally as:
 \begin{alignat*}{5}
           \min_{\mathcal{D}, \mathcal{R}}  f(\mathcal{D}, \mathcal{R}; X) + g(\mathcal{D}) + h(\mathcal{R})      & \quad  & \\
   %        \text{s.t.} & \quad  &, & \quad \\
      %                 & \quad  &, & \quad 
 \end{alignat*}
-with $f$ representing the data-fidelity term (usually a measure for goodness of the approximation) and regularizers $g, h$ for the dictionary and representatives respectively.
+where $f$ represents the data-fidelity term (usually a measure for goodness of the approximation) with regularizers $g,\ h$ for the dictionary and representatives respectively.
 \\
 One way of stating the problem for (a) is
 \begin{alignat}{5}
-          \min_{\mathcal{D}, \mathcal{R}} \|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2  + \lambda \sum_{i=1}^k  \|\ r_i\|_0    & \quad  & \\
-         \text{s.t.} & \quad  \|d_j\|_2 \leq 1&, \forall j=1, ...,n & \quad 
+         & \min_{\mathcal{D}, \mathcal{R}} \|\mathcal{X} \ -&\mathcal{D}\mathcal{R}\|_F^2  + &\lambda \sum_{i=1}^k  \|\ r_i\|_0     \quad   \\
+         &\text{s.t.}  \quad  &\|d_j\|_2 \leq 1&, \forall j=1, ...,n  \quad 
 \end{alignat}
 with a regularizer on the amount of variables used and a further restriction on the dictionary vectors to avoid scaling problems. The $\| .\|_0$ is hereby defined as the number of non-zero entries making the whole problem computationally difficult to track\cite{NPHardproof}. A formulation for the case (b) is 
 \begin{alignat}{5}
-          \min_{\mathcal{R}} \sum_{i=1}^k  \|\ r_i\|_0    & \quad  & \\
-         \text{s.t.} & \quad  \|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \leq \epsilon & & \quad \\
-          & \quad  \| r_i \|_0 \leq t  &, \forall i=1, ..., k & \quad 
+          &\min_{\mathcal{R}} &\sum_{i=1}^k  \|\ r_i\|_0     \quad  & \\
+         &\text{s.t.}  &\quad  \|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \leq \epsilon & \quad \\
+          & \ & \quad  \| r_i \|_0 \leq t  &, \forall i=1, ..., k  \quad 
 \end{alignat}
 
 %Which can be reclassified as an optimization problem: $$\argmin_{\mathcal{D}\in\mathcal{C}, r_i\in\R^n} \sum_{i=1}^k \|x_i - \mathcal{D}r_i\|_2^2 + \lambda\|r_i\|_0$$
 %where $\mathcal{C} = \left\{\mathcal{D}\in\R^{d \times n} : \|d_i\|_2 \leq 1, \forall i=1, \dots, n\right\}$.
 
-\noindent We abstract some of the functional definitions from the above statement for case (b) so as to represent the optimization problem in a more general form:
+\noindent We abstract some of the functional definitions from the above statement for case (b) to represent the optimization problem in a more general form:
 \begin{alignat*}{4}
     &\text{minimize }   & F(a) & \\
-    &\text{subject to } & \text{support}(a)&\subseteq S\\
+    &\text{subject to } & \textit{supp}(a)&\subseteq S\\
     &                   & |S|  &\leq t\\
 \end{alignat*}
-	
+
 
 \subsection{Related Work}
-In order to tackle the problem whose complexity mainly arises from the $\| .\|_0$ norm, one approach is to relax the norm to a more feasible one (i.e. LASSO, LARS for convex-relaxation or log penalty for non-convex relaxation). However, this might lead to over-penalization\cite{nonconvexrelax}.
+In order to tackle the problem whose complexity mainly arises from the $\| .\|_0$ norm, one approach is to relax the norm to a more feasible one (i.e. LASSO, LARS for convex-relaxation or log penalty for non-convex relaxation). However, this might lead to over-penalization\cite{nonconvexrelax}. Another ansatz is to utilize a greedy approach which constantly adds or removes variables based on some measure\cite{submod_spectral}.  This can be stated as a maximization problem of a submodular function. A submodular function thereby can be viewed as a discrete analog to a convex function in the continuous case\cite{submod_sparsecoding} which encodes the principle of ``diminishing returns". These submodular approximations to Sparse Dictionary Selection have become nearly ubiquitous in the literature with slight algorithmic variations that approach the theoretical bounds, $(1 - 1/e)$, set in \cite{Krause05near-optimalnonmyopic}.
 \\
+
+\noindent Applications of Sparse Dictionary Learning---in particular the utilization of submodular approximations---are broad and varied; with uses found in classical Machine Learning (i.e. Linear Sparse Regression), Computer Vision(Image reconstruction, inpainting, denoising), Signal Processing\cite{nonconvexrelax}\cite{submod_sparsecoding}, Social Network Analysis, Statistics\cite{rIBP}, and Economics\cite{utilityWelfare} among many others. 
 \\
-Another ansatz is to use a greedy approach which constantly adds or removes variables based on some measure\cite{submod_spectral}.  This can be stated as a maximization problem of a submodular function. A submodular function thereby can be viewed as a discrete analogon to a convex function in the continuous case\cite{submod_sparsecoding}.
-\\
-\\
-Applications of Sparse Dictionary Learning learn from classical Machine Learning (i.e. Linear Sparse Regression), Computer Vision(Image reconstruction, inpainting, denoising) to Signal Processing\cite{nonconvexrelax}\cite{submod_sparsecoding}.
+
+\noindent There has been little work in Sparse Regression and Dictionary Learning that utilize the functional inverse of submodular approximations, known as supermodular functions. Supermodularity can facilitate the potential formulation of a dual to the native Dictionary Learning problem. This project will be the summary of our explorations within supermodular functions and their extension to this class of problems.
 %\textcolor{red}{A simple overview of prior work, highlighting the assumptions that have been made over time, especially the submodular function representation and resulting convex relaxation. This will lead to a discussion on greedy algorithms and the continuous greedy algorithm.}
 
 \section{Data}
