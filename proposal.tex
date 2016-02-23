@@ -20,18 +20,38 @@
 As noted above, this project is to be completed by Taylor Killian and Leonhard Spiegelberg with careful guidance by Prof. Singer. We anticipate that this project will take our full coordinated effort to complete a worthwhile result by the end of the semester. We have already begun trying to understand the literature and underlying structure of the Sparse Regression/Dictionary Selection problem formulation, including all assumptions that have been made to facilitate approximate solutions. We anticipate that multiple meetings per week will be necessary to ensure consistent progress. 
 
 \section{Model/Problem} \label{model}
-Sparse Regression/Dictionary Selection is a class of problems that are variants of representation learning. The goal of these kinds of problems is to determine a sparse representation of input data in the form of a linear combination of basis elements as well as the basis elements themselves. That is, one essentially factors the input matrix in a sparse catalog and a dictionary of basis elements both of which need to be inferred from the data.
+Sparse Regression / Dictionary Selection is a class of problems that are variants of representation learning. The goal of these kinds of problems is to determine a sparse representation of input data in the form of a linear combination of basis elements as well as the basis elements themselves. That is, one essentially factors the input matrix in a sparse catalog and a dictionary of basis elements both of which need to be inferred from the data.
 \newline
 
 \noindent More formally this problem has been defined as follows:
 \newline
 
-Given $\mathcal{X} = [x_1,\dots , x_k], \ x_i\in\R^d$, we wish to find a dictionary $\mathcal{D}\in\R^{d \times n}$ and a representation $\mathcal{R} = [r_1, \dots, r_k], \ r_i\in\R^n$ such that: $$\|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \text{ is minimized and } \mathcal{R} \text{ is sparse enough.}$$
+Given data $\mathcal{X} = [x_1,\dots , x_k], \ x_i\in\R^d$, we wish to find a dictionary $\mathcal{D}\in\R^{d \times n}$ and a representation $\mathcal{R} = [r_1, \dots, r_k], \ r_i\in\R^n$ such that: $$\|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \text{ is minimized and } \mathcal{R} \text{ is sparse enough.}$$
 
-\noindent Which can be reclassified as an optimization problem: $$\argmin_{\mathcal{D}\in\mathcal{C}, r_i\in\R^n} \sum_{i=1}^k \|x_i - \mathcal{D}r_i\|_2^2 + \lambda\|r_i\|_0$$
-where $\mathcal{C} = \left\{\mathcal{D}\in\R^{d \times n} : \|d_i\|_2 \leq 1, \forall i=1, \dots, n\right\}$.
+\noindent Depending on the aim of (a) finding a minimal representation for given precision or (b) finding a best approximation using up to $t$ variables the problem can be stated in a most general form as
+\begin{alignat*}{5}
+          \min_{\mathcal{D}, \mathcal{R}}  f(\mathcal{D}, \mathcal{R}; X) + g(\mathcal{D}) + h(\mathcal{R})      & \quad  & \\
+  %        \text{s.t.} & \quad  &, & \quad \\
+     %                 & \quad  &, & \quad 
+\end{alignat*}
+with $f$ representing the data-fidelity term (usually a measure for goodness of the approximation) and regularizers $g, h$ for the dictionary and representatives respectively.
+\\
+One way of stating the problem for (a) is
+\begin{alignat}{5}
+          \min_{\mathcal{D}, \mathcal{R}} \|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2  + \lambda \sum_{i=1}^k  \|\ r_i\|_0    & \quad  & \\
+         \text{s.t.} & \quad  \|d_j\|_2 \leq 1&, \forall j=1, ...,n & \quad 
+\end{alignat}
+with a regularizer on the amount of variables used and a further restriction on the dictionary vectors to avoid scaling problems. The $\| .\|_0$ is hereby defined as the number of non-zero entries making the whole problem computationally difficult to track. A formulation for the case (b) is 
+\begin{alignat}{5}
+          \min_{\mathcal{R}} \sum_{i=1}^k  \|\ r_i\|_0    & \quad  & \\
+         \text{s.t.} & \quad  \|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \leq \epsilon & & \quad \\
+          & \quad  \| r_i \|_0 \leq t  &, \forall i=1, ..., k & \quad 
+\end{alignat}
 
-\noindent We abstract some of the functional definitions from the above statement so as to represent the optimization problem in a more general form:
+%Which can be reclassified as an optimization problem: $$\argmin_{\mathcal{D}\in\mathcal{C}, r_i\in\R^n} \sum_{i=1}^k \|x_i - \mathcal{D}r_i\|_2^2 + \lambda\|r_i\|_0$$
+%where $\mathcal{C} = \left\{\mathcal{D}\in\R^{d \times n} : \|d_i\|_2 \leq 1, \forall i=1, \dots, n\right\}$.
+
+\noindent We abstract some of the functional definitions from the above statement for case (b) so as to represent the optimization problem in a more general form:
 \begin{alignat*}{4}
     &\text{minimize }   & F(a) & \\
     &\text{subject to } & \text{support}(a)&\subseteq S\\
@@ -71,5 +91,17 @@ Our ultimate goal is to submit this work to the 2016 NIPS conference. The deadli
   \bibitem{rIBP}
   Doshi-Velez, F., Williamson, S., (2015). Restricted Indian Buffet Processes. \textit{In submission}. arXiv:1508.06303 [stat.ME]
   
+%  @ARTICLE{6873279, 
+%author={Tillmann, A.M.}, 
+%journal={Signal Processing Letters, IEEE}, 
+%title={On the Computational Intractability of Exact and Approximate Dictionary Learning}, 
+%year={2015}, 
+%volume={22}, 
+%number={1}, 
+%pages={45-49}, 
+%keywords={approximation theory;compressed sensing;computational complexity;dictionaries;iterative methods;learning (artificial intelligence);optimisation;signal classification;signal reconstruction;signal representation;vectors;NP-hard sparse recovery problem;approximate dictionary learning algorithm;compressed sensing;computational intractability;data set training;iteration method;sensor permutation problem;signal classification;signal processing application;signal vector reconstruction;sparse signal representation;sparse signal vector coding;Approximation algorithms;Approximation methods;Complexity theory;Dictionaries;Optimization;Signal processing algorithms;Sparse matrices;(SAS-MALN, MLSAS-SPARSE) machine learning;Compressed sensing;computational complexity}, 
+%doi={10.1109/LSP.2014.2345761}, 
+%ISSN={1070-9908}, 
+%month={Jan},}
 \end{thebibliography}
 \end{document}
