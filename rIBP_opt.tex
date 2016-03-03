@@ -1,0 +1,63 @@
+\documentclass[submit]{harvardml}
+
+\usepackage[OT1]{fontenc}
+\usepackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[pdftex]{graphicx}
+\usepackage{subfig}
+\usepackage{fullpage}
+\usepackage{palatino}
+\usepackage{mathpazo}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{todonotes}
+\usepackage{listings}
+\usepackage{common}
+\usepackage{bm}
+\usepackage{cancel}
+\usepackage[yyyymmdd,hhmmss]{datetime}
+
+\captionsetup{justification=centering}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\W}{\mathcal{W}}
+\newcommand{\A}{\mathcal{A}}
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+
+\assignment{rIBP Optimization Formulation}
+\duedate{\today}
+\collaborators{
+
+Taylor Killian,
+
+Leonhard Spiegelberg}
+
+\begin{document}
+
+\begin{itemize}
+\item Given data $\X$ with dimensions (N $\times$ D)
+\item Find a factorization $\W\A$, where $\W$ is N by K and $\A$ is K by D that satisfies the following optimization problem:
+\end{itemize}
+
+\begin{displaymath}
+        \begin{aligned}
+        \min &\|\X-\W\A\|_F\\
+        &\ \\
+        \text{s.t} &\; \W_{nk}\in \{0,1\}\\
+                   &\; \sum_k \W_{nk} = c_n
+    \end{aligned}
+\end{displaymath}
+
+The objective in the above formulation encourages the solution to satisfy $\X\approx\W\A$ where (at this initial stage) the entries of $\A$ are unconstrained. There are two simple relaxations that make the formation of $\W$ a little easier. From discussions with Finale, it seemed that part is the hardest. The first relaxation to relax the first constraint is to label the entries of $\W$ with the following distribution:
+\[ \W_{nk} = \begin{cases} 
+      0 & \text{with prob. } p \\
+      \text{some } w \in\R & \text{with prob. } 1-p \\
+   \end{cases}
+\] 
+\noindent The second relaxation, simplifying the second constraint, is to create a penalty/loss term, based on the distance from $c_n$ the row $\W_n$ is, in the objective of the form: $$(c_n-\sum_k \W_{nk})^2$$
+
+
+
+\end{document}
