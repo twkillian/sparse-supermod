@@ -113,13 +113,36 @@ Now, you'll note that the definition of the dictionary selection problem (Equati
 \item Fix $\mathcal{D}$, find a sparse coding between it and $X$.
 \item Solve the Dictionary Optimization problem: $\mathcal{D} = X\mathcal{R}^{+}$ following which we renormalize $\mathcal{D}$.
 \end{enumerate}
-Upon iteration we can expect convergence, using guarantees in the continuous greedy algorithm~\cite{greedy_selection}, \cite{submod_spectral}, \cite{submod_sparsecoding} as well as those made in \cite{BoutsidisLS15}.
+Upon iteration we can expect convergence, using guarantees in the continuous greedy algorithm~\cite{greedy_selection}, \cite{submod_spectral}, \cite{submod_sparsecoding} as well as those made in \cite{BoutsidisLS15}. The commonly known sparse regression can be seen as an instance of sparse multiple linear regression with $Y$ existing only of one column. I.e. $XW-Y$ is a vector. 
 
 \subsection{Weakly-$\alpha$ Supermodularity} \label{weakalpha}
-\textcolor{red}{Here's where Leo will expound on the weakly-$\alpha$ supermodular result}
+
+Weakly-$\alpha$-supermodularity is a relaxation of supermodularity. With this relaxation, it can be shown that problems that are $\alpha$-weakly supermodular can be solved using a slightly adapted standard greedy algorithm. However, convergence typically requires more steps than  if the problem was supermodular only.
+\\
+\\
+A non-negative, non-increasing set function $f(S): 2^{[n]} \rightarrow \mathbb{R}^+$ is weakly-$\alpha$-supermodular if there exists $\alpha \geq 1$ such that for any two sets $S, T \subseteq [n]$
+\[f(S) - f(S \cup T) \leq \alpha \vert T \setminus S\vert \max_{i \in T \setminus S} f(S) - f(S \cup \lbrace i \rbrace) \]
+To understand the definition better, assume we are given two disjoint sets $A, B \subseteq [n]$ with $A \cap B = \emptyset$. Then $\alpha$-weakly-supermodularity means that we can find an element $i \in B$ s.t. 
+\[
+\frac{f(A) - f(A \cup B)}{\alpha \vert B\vert} \leq f(A) - f(A \cup \lbrace i \rbrace)
+\]
+In words, we can find an element $i$ that is better (in terms of lowering the objective function) than $\frac{1}{\alpha}$ times the average gain of an element of $B$. Note that for a supermodular function $\alpha = 1$.
+\\
+\\
+In order to solve the SMLR problem 
+\[\min \lbrace f(S) : \vert S \vert \leq k \rbrace \]
+for some $k$, the greedy extension algorithm needs at most 
+\[ \left\lceil \alpha k \ln \left(f\left(\frac{S_0}{\epsilon}\right)\right)\right\rceil \]
+ steps given a start solution $S_0$ (usually the empty set), a threshold error $\epsilon$ (i.e $f(S_k) \leq (1+\epsilon)f(S^*)$ for the optimal solution $S^*$) and the weakness-parameter $\alpha$ of the function $f$ \cite{BoutsidisLS15}.
+ \\
+ \\
+As in \cite{BoutsidisLS15} the authors show that sparse regression can be seen as minimizing a $\alpha$-weakly supermodular function with $\alpha = \| X^+ \|_F$, the extended greedy algorithm presented can be used to solve sparse regression.
 
 \section{Next Steps}
 Our primary next step is in taking measures to develop the structure for an extension of the continuous greedy algorithm from submodular functions. After developing this algorithm, which we intend to pattern after that done in~\cite{Singer16TwoStage}, we will need to develop guarantees for convergence, accuracy and efficiency. There are theoretical benchmarks that have been made in \cite{greedy_selection}, \cite{Krause05near-optimalnonmyopic} and \cite{nonconvexrelax} that we also need to be sure that we meet in the ``dual"-like formulation of supermodular optimization for dictionary selection. Once we have this algorithm in place we will need to apply it some data sets like those in ~\cite{Singer16TwoStage}.
+\\
+\\
+In another step, we would like to implement the extended greedy algorithm presented in \cite{BoutsidisLS15} and compare its performance to other known approximative algorithms in order to understand its limits or potential flaws better. Eventually, this can also serve as a benchmark for the extension of the continuous greedy algorithm we seek to develop.
 
 \bibliographystyle{plain}
 \bibliography{bibliography}
