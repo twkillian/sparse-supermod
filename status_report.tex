@@ -32,7 +32,7 @@ We don't have any reason to refocus or redefine our project. There was initially
 \noindent More formally this problem has been defined as follows:
 \newline
 
-Given data $\mathcal{X} = [x_1,\dots , x_k], \ x_i\in\R^d$, we wish to find a dictionary $\mathcal{D}\in\R^{d \times n}$ and a representation $\mathcal{R} = [r_1, \dots, r_k], \ r_i\in\R^n$ such that: $$\|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \text{ is minimized and } \mathcal{R} \text{ is sparse enough.}$$
+Given data $X = [x_1,\dots , x_k], \ x_i\in\R^d$, we wish to find a dictionary $\mathcal{D}\in\R^{d \times n}$ and a representation $\mathcal{R} = [r_1, \dots, r_k], \ r_i\in\R^n$ such that: $$\|X-\mathcal{D}\mathcal{R}\|_F^2 \text{ is minimized and } \mathcal{R} \text{ is sparse enough.}$$
 
 \noindent Depending on the aim of (a) finding a minimal representation for given precision or (b) finding a best approximation using up to $t$ variables the problem can be stated more generally as:
 \begin{alignat*}{5}
@@ -44,13 +44,13 @@ where $f$ represents the data-fidelity term (usually a measure for goodness of t
 \\
 One way of stating the problem for (a) is
 \begin{alignat}{5}
-         & \min_{\mathcal{D}, \mathcal{R}} \|\mathcal{X} \ -&\mathcal{D}\mathcal{R}\|_F^2  + &\lambda \sum_{i=1}^k  \|\ r_i\|_0     \quad   \\
+         & \min_{\mathcal{D}, \mathcal{R}} \|X \ -&\mathcal{D}\mathcal{R}\|_F^2  + &\lambda \sum_{i=1}^k  \|\ r_i\|_0     \quad   \\
          &\text{s.t.}  \quad  &\|d_j\|_2 \leq 1&, \forall j=1, ...,n  \quad 
 \end{alignat}
 with a regularizer on the amount of variables used and a further restriction on the dictionary vectors to avoid scaling problems. The $\| .\|_0$ is hereby defined as the number of non-zero entries making the whole problem computationally difficult to track\cite{NPHardproof}. A formulation for the case (b) is 
 \begin{alignat}{5}
           &\min_{\mathcal{R}} &\sum_{i=1}^k  \|\ r_i\|_0     \quad  & \\
-         &\text{s.t.}  &\quad  \|\mathcal{X}-\mathcal{D}\mathcal{R}\|_F^2 \leq \epsilon & \quad \\
+         &\text{s.t.}  &\quad  \|X-\mathcal{D}\mathcal{R}\|_F^2 \leq \epsilon & \quad \\
           & \ & \quad  \| r_i \|_0 \leq t  &, \forall i=1, ..., k  \quad 
 \end{alignat}
 
@@ -68,10 +68,10 @@ with a regularizer on the amount of variables used and a further restriction on 
 In order to tackle the problem whose complexity mainly arises from the $\| .\|_0$ norm, one approach is to relax the norm to a more feasible one (i.e. LASSO, LARS for convex-relaxation or log penalty for non-convex relaxation). However, this might lead to over-penalization\cite{nonconvexrelax}. Another ansatz is to utilize a greedy approach which constantly adds or removes variables based on some measure\cite{submod_spectral}.  This can be stated as a maximization problem of a submodular function. A submodular function thereby can be viewed as a discrete analog to a convex function in the continuous case\cite{submod_sparsecoding} which encodes the principle of ``diminishing returns". These submodular approximations to Sparse Dictionary Selection have become nearly ubiquitous in the literature with slight algorithmic variations that approach the theoretical bounds, $(1 - 1/e)$, set in \cite{Krause05near-optimalnonmyopic}.
 \\
 
-\noindent Applications of Sparse Dictionary Learning---in particular the utilization of submodular approximations---are broad and varied; with uses found in classical Machine Learning (i.e. Linear Sparse Regression), Computer Vision(Image reconstruction, inpainting, denoising), Signal Processing\cite{nonconvexrelax}\cite{submod_sparsecoding}, Social Network Analysis, Statistics\cite{rIBP}, and Economics\cite{utilityWelfare} among many others. 
+\noindent Applications of Sparse Dictionary Learning---in particular the utilization of submodular approximations---are broad and varied; with uses found in classical Machine Learning (i.e. Sparse Linear Regression), Computer Vision(Image reconstruction, inpainting, denoising), Signal Processing\cite{nonconvexrelax}\cite{submod_sparsecoding}, Social Network Analysis, Statistics\cite{rIBP}, and Economics\cite{utilityWelfare} among many others. 
 \\
 
-\noindent There has been little work in Sparse Regression and Dictionary Learning that utilize the functional inverse of submodular approximations, known as supermodular functions. Supermodularity can facilitate the potential formulation of a dual to the native Dictionary Learning problem. Recently there has been some attempts at developing foundations for extending the suite of algorithms used in submodular minimization to submodular formulations. In order to accomplish this, several caveats have been made on the functional representations themselves~\cite{BoutsidisLS15}. We are continuing our research and study and are closer to the development of a two-stage supermodular extension of the continuous greedy algorithm used in the submodular case~\cite{Singer16TwoStage}. This project still intends to be the summary of our explorations within supermodular functions and their extension to this class of problems.
+\noindent There has been little work in Sparse Regression and Dictionary Learning that utilize the functional inverse of submodular approximations, known as supermodular functions. Supermodularity can facilitate the potential formulation of a dual to the native Dictionary Learning problem. Recently there has been some attempts at developing foundations for extending the suite of algorithms used in submodular maximization to supermodular formulations. In order to accomplish this, several caveats have been made on the functional representations themselves~\cite{BoutsidisLS15}. We are continuing our research and study and are closer to the development of a two-stage supermodular extension of the continuous greedy algorithm used in the submodular case~\cite{Singer16TwoStage}. This project still intends to be the summary of our explorations within supermodular functions and their extension to this class of problems.
 %\textcolor{red}{A simple overview of prior work, highlighting the assumptions that have been made over time, especially the submodular function representation and resulting convex relaxation. This will lead to a discussion on greedy algorithms and the continuous greedy algorithm.}
 
 
@@ -88,7 +88,7 @@ Our first step in this project will be to understand the supermodular minimzatio
 In the following step we need to understand the greedy algorithm for submodular maximization and its improvement, the continuous greedy algorithm. After this, understanding 2-stage submodular optimization would ideally allow us to connect the pieces, gain insight and finally propose a new algorithm of dealing with the problem.
 \end{displayquote}
 
-We have successfully completed the first of these stages (as will be shown in \ref{supermodTwoStage}) and are on our way in completing the second.
+We have successfully completed the first of these stages (as will be shown in \ref{supermodTwoStage}) and are on our way toward completing the second.
 
 \subsection{Dictionary Selection as Two-Stage Supermodular Minimization} \label{supermodTwoStage}
 
@@ -142,7 +142,7 @@ As in \cite{BoutsidisLS15} the authors show that sparse regression can be seen a
 Our primary next step is in taking measures to develop the structure for an extension of the continuous greedy algorithm from submodular functions. After developing this algorithm, which we intend to pattern after that done in~\cite{Singer16TwoStage}, we will need to develop guarantees for convergence, accuracy and efficiency. There are theoretical benchmarks that have been made in \cite{greedy_selection}, \cite{Krause05near-optimalnonmyopic} and \cite{nonconvexrelax} that we also need to be sure that we meet in the ``dual"-like formulation of supermodular optimization for dictionary selection. Once we have this algorithm in place we will need to apply it some data sets like those in ~\cite{Singer16TwoStage}.
 \\
 \\
-In another step, we would like to implement the extended greedy algorithm presented in \cite{BoutsidisLS15} and compare its performance to other known approximative algorithms in order to understand its limits or potential flaws better. Eventually, this can also serve as a benchmark for the extension of the continuous greedy algorithm we seek to develop.
+In another step, we would like to implement the extended greedy algorithm presented in \cite{BoutsidisLS15} and compare its performance to other known approximative algorithms in order to better understand its limits or potential flaws. Eventually, this can also serve as a benchmark for the extension of the continuous greedy algorithm we seek to develop.
 
 \bibliographystyle{plain}
 \bibliography{bibliography}
