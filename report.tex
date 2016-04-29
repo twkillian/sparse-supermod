@@ -99,7 +99,23 @@ Then the problem can be equivalently stated as
 \]
 
 \subsection{How to combine it}
-...
+For the two stage formulation we can generally think of the problem as of adapting the idea of the method of optimal directions but instead of projecting the given representation onto the dictionary we strive for an additional minimization problem:
+Let $f_1, ..., f_m$ be instances of the SMLR problem. Then the dictionary problem can be seen as
+\[
+\min_{D, \theta} q(f_1(D, \theta), ..., f_m(D, \theta)) + \sum_{j=1}^n \theta_j (\| d_j\|_2 - 1)
+\]
+for some combination function $q$. What properties should the combination function satisfy?
+\\
+\textcolor{red}{that is a great question! Can we formulate some ideas, thoughts on what it should look like?}
+ \\
+ One choice for $q$ could be 
+ \[q(f_1(D, \theta), ..., f_m(D, \theta)) := \sum_{i=1}^m f_i(D, \theta)\]
+  another one to minimize the product of the SMLR instances. Reformulating it with a logarithm might give even better results with increased computationally tractability 
+ \[
+ q(f_1(D, \theta), ..., f_m(D, \theta)) = \sum_{i=1}^m \log (f_i(D, \theta))
+ \]
+ (\text{red}{we can omit the logical step of log'ing also the lambda term because it is a constraint...})
+ 
 \section{Introduction} \label{introduction}
 Introduce the problem and it's complexities
 
