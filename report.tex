@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval, algorithm, algorithmic}
+\usepackage{xcolor}
 \captionsetup{justification=centering}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\C}{\mathcal{C}}
@@ -15,6 +16,39 @@
 To be filled with an interesting summary of our work and results
 
 \end{abstract}
+
+%% Leos thoughts
+
+\section{Dictionary Learning as 2-stage supermodular minimzation}
+The introduced problem of Dictionary learning, which in its general form can be seen as
+\[
+\min_{D, R, \theta, \lambda} f(D, R, X) + g(D, \theta) + h(R, \lambda)
+\]
+where $f$ describes the objective function used to measure goodness of approximation of $X$ through $D, R$, $g$ describing suitable constraints on the dictionary, $h$ on the representation respectively.
+With an input dataset $X=[x_1, \dots, x_k],  x_i \in \R^d,  X \in \R^{d\times k}$ we wish to find a dictionary $D \in \R^{d\times n},  \mathcal{D} = [d_1, \dots, d_n]$ and a representation $\mathcal{R}=[r_1,\dots,r_k], \ r_i\in\R^n, \ \mathcal{R}\in\R^{n\times k}$, such that both $\|X-\mathcal{D}\mathcal{R}\|_F^2$ is minimized and the representations $r_i$ are "sparse enough". To limit the dictionary becoming infinitely large (or small) we introduce a constraint on the dictionary's columns. For this any sufficient norm can be used. An often used norm is the $l_2$-norm. 
+Thus for the dictionary learning problem we introduce the problem with constraints
+\begin{alignat}{5}
+         &\min_{D, R} \|X \ -D R\|_F^2  & \quad   \\
+         &\text{s.t.}  \quad  &\|d_j\|_2 \leq 1&, \forall j=1, ...,n  \quad \\
+         &  \quad  &\|r_i\|_0 \leq t&, \forall i=1, ...,k  \quad 
+\end{alignat}
+
+\textcolor{red}{Description of constraints here}
+
+
+Using lagrange multipliers this can be brought to the general form above
+\[
+\min_{D, R, \theta, \lambda} \|X \ -D R\|_F^2 + \sum_{j=1}^m \theta_j (\| d_j\|_2 - 1)+ \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
+\]
+I.e. the functions are
+\[
+\begin{split}
+f(D, R, X) &:= \|X \ -D R\|_F^2 \\
+g(D, \theta) &:= \sum_{j=1}^m \theta_j (\| d_j\|_2 - 1) \\
+h(R, \lambda) &:= \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
+\end{split}
+\]
+\textcolor{red}{How to bring this to the penalty function form?}
 
 \section{Introduction} \label{introduction}
 Introduce the problem and it's complexities
