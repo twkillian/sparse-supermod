@@ -18,28 +18,47 @@
 \maketitle
 
 \begin{abstract}
-To be filled with an interesting summary of our work and results
-
+We attempt to develop a method by which to solve dictionary selection under a supermodular assumption. This method is motivated primarily by the work of Singer et al. (2016)~\cite{Singer16TwoStage} where a two-stage submodular maximization generalization was developed. The development of a two-stage supermodular minimization algorithm to address Sparse Dictionary Selection utilizes approximation results derived by Boutsidis et al. (2015)~\cite{BoutsidisLS15} for supermodular optimization. We show that Sparse Dictionary Selection is functionally equivalent to Sparse Multi Linear Regression. We analyze and experiment with an implementation of our two-stage optimization routine. With this project we have laid the ground for further exploration into the formalization of the two-stage method that we propose here. 
 \end{abstract}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%-------------------------------                              Introduction                               -------------------------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}\label{sec:intro}
 
+\noindent Typical optimization problems that use submodular or supermodular functions are generally of the form:\\
+
+\noindent Given a set of object $V=\{v_1,\ldots,v_n\}$ and a function $f:2^V\to \R$ that returns a real value for any subset. Suppose we are interested in finding the subset that either maximizes or minimizes the function, e.g., ${arg\max}_{S\subseteq V} f(S)$, possible subject to some constraints on the size of $S$. In dictionary selection these constraints are generally on the number of iterms that the subset $S$ can contain, where the function encodes the accuracy of representing $V$ with $S$.
+
+\noindent We begin by establishing key definitions and properties of sub-/supermodularity.\\
+
+\noindent A function $f:2^V\to \R$ is \textit{submodular} if for any $A,\ B \subseteq V$ we have : $$f(A) + f(B) \geq f(A\cup B) + f(A\cap B)$$ An alternate and equivalent definition that aids in developing intuition is, in the event that $A\subseteq B \subseteq V$ and $v\in V\setminus B$ we have: $$f(A\cup \{v\}) - f(A) \geq f(B\cup\{v\}) - f(B)$$
+This alternate definition of submodularity demonstrates a key feature of this class of functions; that is the marginal increase of any additional element diminishes with the overall size of the set. This is known as the ``diminishing returns" property of submodular functions.
+
+\noindent Now, a function $f:2^V\to \R$ is said to be \textit{supermodular} if for any sets $A,\ B \subseteq V$ we have : $$f(A) + f(B) \leq f(A\cup B) + f(A\cap B)$$ This leads to a similar ``increasing returns" property given sets $A\subseteq B \subseteq V$ and $v\in V\setminus B$ we have: $$f(A\cup \{v\}) - f(A) \leq f(B\cup\{v\}) - f(B)$$
+
+\noindent It is important to note that submodular and supermodular functions are inverses of each other. That relation motivates the excursion into the development of two-stage supermodular minimization, influenced by previous work in the development of similar methodology for submodular maximization.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%-------------------------------                              Prior Work                                 -------------------------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work}\label{sec:prior-work}
 
-\section{Problem Definition}\label{sec:problem}
-
-\section{Results}\label{sec:results}
-
-\section{Evaluation}\label{sec:eval}
-
-\section{Discussion}\label{sec:discuss}
-
-
-\section{Model/Problem Refocusing} \label{model}
-We don't have any reason to refocus or redefine our project. There was initially some concern that our problem had already been solved in a satisfiable manner. We're happy to report that there is significant room for contribution in the realm of supermodular optimization. We began by developing intuition in supermodular and submodular optimization, highlighted here in this section, and by reviewing recent research in the development of algorithms for both supermodular minimization~\cite{BoutsidisLS15} and for a two-stage formulation of submodular maximization~\cite{Singer16TwoStage}. 
+In order to tackle the problem whose complexity mainly arises from the $\| .\|_0$ norm, one approach is to relax the norm to a more feasible one (i.e. LASSO, LARS for convex-relaxation or log penalty for non-convex relaxation). However, this might lead to over-penalization\cite{nonconvexrelax}. Another ansatz is to utilize a greedy approach which constantly adds or removes variables based on some measure\cite{submod_spectral}.  This can be stated as a maximization problem of a submodular function. A submodular function thereby can be viewed as a discrete analog to a convex function in the continuous case\cite{submod_sparsecoding} which encodes the principle of ``diminishing returns". These submodular approximations to Sparse Dictionary Selection have become nearly ubiquitous in the literature with slight algorithmic variations that approach the theoretical bounds, $(1 - 1/e)$, set in \cite{Krause05near-optimalnonmyopic}.
 \\
 
-\noindent Sparse Regression / Dictionary Selection is a class of problems that are variants of representation learning. The goal of these kinds of problems is to determine a sparse representation of input data in the form of a linear combination of basis elements as well as the basis elements themselves. That is, one essentially factors the input matrix into a sparse catalog and a dictionary of basis elements, both of which need to be inferred from the data.
+\noindent Applications of Sparse Dictionary Learning---in particular the utilization of submodular approximations---are broad and varied; with uses found in classical Machine Learning (i.e. Sparse Linear Regression), Computer Vision(Image reconstruction, inpainting, denoising), Signal Processing\cite{nonconvexrelax}\cite{submod_sparsecoding}, Social Network Analysis, Statistics\cite{rIBP}, and Economics\cite{utilityWelfare} among many others. 
+\\
+
+\noindent There has been little work in Sparse Regression and Dictionary Learning that utilize the functional inverse of submodular approximations, known as supermodular functions. Supermodularity can facilitate the potential formulation of a dual to the native Dictionary Learning problem. Recently there has been some attempts at developing foundations for extending the suite of algorithms used in submodular maximization to supermodular formulations. In order to accomplish this, several caveats have been made on the functional representations themselves~\cite{BoutsidisLS15}. We are continuing our research and study and are closer to the development of a two-stage supermodular extension of the continuous greedy algorithm used in the submodular case~\cite{Singer16TwoStage}. This project still intends to be the summary of our explorations within supermodular functions and their extension to this class of problems.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%-----------------------------                        Defining the Algorithm                      --------------------------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Problem Definition}\label{sec:problem}
+
+Sparse Regression / Dictionary Selection is a class of problems that are variants of representation learning. The goal of these kinds of problems is to determine a sparse representation of input data in the form of a linear combination of basis elements as well as the basis elements themselves. That is, one essentially factors the input matrix into a sparse catalog and a dictionary of basis elements, both of which need to be inferred from the data.
 \newline
 
 \noindent More formally this problem has been defined as follows:
@@ -67,8 +86,8 @@ with a regularizer on the amount of variables used and a further restriction on 
           & \ & \quad  \| r_i \|_0 \leq t  &, \forall i=1, ..., k  \quad 
 \end{alignat}
 
-%Which can be reclassified as an optimization problem: $$\argmin_{\mathcal{D}\in\mathcal{C}, r_i\in\R^n} \sum_{i=1}^k \|x_i - \mathcal{D}r_i\|_2^2 + \lambda\|r_i\|_0$$
-%where $\mathcal{C} = \left\{\mathcal{D}\in\R^{d \times n} : \|d_i\|_2 \leq 1, \forall i=1, \dots, n\right\}$.
+Which can be reclassified as an optimization problem: $$\argmin_{\mathcal{D}\in\mathcal{C}, r_i\in\R^n} \sum_{i=1}^k \|x_i - \mathcal{D}r_i\|_2^2 + \lambda\|r_i\|_0$$
+where $\mathcal{C} = \left\{\mathcal{D}\in\R^{d \times n} : \|d_i\|_2 \leq 1, \forall i=1, \dots, n\right\}$.\\
 
 \noindent We abstract some of the functional definitions from the above statement for case (b) to represent the optimization problem in a more general form:
 \begin{alignat*}{4}
@@ -77,42 +96,22 @@ with a regularizer on the amount of variables used and a further restriction on 
     &                   & |S|  &\leq t\\
 \end{alignat*}
 
-\subsection{Related Work}
-In order to tackle the problem whose complexity mainly arises from the $\| .\|_0$ norm, one approach is to relax the norm to a more feasible one (i.e. LASSO, LARS for convex-relaxation or log penalty for non-convex relaxation). However, this might lead to over-penalization\cite{nonconvexrelax}. Another ansatz is to utilize a greedy approach which constantly adds or removes variables based on some measure\cite{submod_spectral}.  This can be stated as a maximization problem of a submodular function. A submodular function thereby can be viewed as a discrete analog to a convex function in the continuous case\cite{submod_sparsecoding} which encodes the principle of ``diminishing returns". These submodular approximations to Sparse Dictionary Selection have become nearly ubiquitous in the literature with slight algorithmic variations that approach the theoretical bounds, $(1 - 1/e)$, set in \cite{Krause05near-optimalnonmyopic}.
-\\
 
-\noindent Applications of Sparse Dictionary Learning---in particular the utilization of submodular approximations---are broad and varied; with uses found in classical Machine Learning (i.e. Sparse Linear Regression), Computer Vision(Image reconstruction, inpainting, denoising), Signal Processing\cite{nonconvexrelax}\cite{submod_sparsecoding}, Social Network Analysis, Statistics\cite{rIBP}, and Economics\cite{utilityWelfare} among many others. 
-\\
-
-\noindent There has been little work in Sparse Regression and Dictionary Learning that utilize the functional inverse of submodular approximations, known as supermodular functions. Supermodularity can facilitate the potential formulation of a dual to the native Dictionary Learning problem. Recently there has been some attempts at developing foundations for extending the suite of algorithms used in submodular maximization to supermodular formulations. In order to accomplish this, several caveats have been made on the functional representations themselves~\cite{BoutsidisLS15}. We are continuing our research and study and are closer to the development of a two-stage supermodular extension of the continuous greedy algorithm used in the submodular case~\cite{Singer16TwoStage}. This project still intends to be the summary of our explorations within supermodular functions and their extension to this class of problems.
-%\textcolor{red}{A simple overview of prior work, highlighting the assumptions that have been made over time, especially the submodular function representation and resulting convex relaxation. This will lead to a discussion on greedy algorithms and the continuous greedy algorithm.}
-
-
-\section{Data}
-So far, we haven't yet determined how we will use data to solidify our project as much of our work at this point is in understanding and developing the theory necessary to develop a new or modified algorithm. As we are looking to develop a novel algorithm to provide a new benchmark for approximate solutions to this class of problems, we will likely assimilate the data and experiments used in  \cite{submod_spectral}, \cite{greedy_selection}, \cite{rIBP}, \cite{Singer16TwoStage}, among others. 
-
-
-\section{Completed Steps}
-
-In our proposal we outlined the following course of action:
-\begin{displayquote}
-Our first step in this project will be to understand the supermodular minimzation framework in which sparse regression can be defined. Then, after having connected and identified sparse regression as supermodular minimization problem we want to show that dictionary selection is a 2-stage sparse regression. \\
-\\
-In the following step we need to understand the greedy algorithm for submodular maximization and its improvement, the continuous greedy algorithm. After this, understanding 2-stage submodular optimization would ideally allow us to connect the pieces, gain insight and finally propose a new algorithm of dealing with the problem.
-\end{displayquote}
-
-We have successfully completed the first of these stages (as will be shown in \ref{supermodTwoStage}) and are on our way toward completing the second.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%--------------------             Setting up the Analysis/Developing the Algorithm                --------------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Evaluation}\label{sec:eval}
 
 \subsection{Dictionary Selection as Two-Stage Supermodular Minimization} \label{supermodTwoStage}
 
 In \cite{BoutsidisLS15}, the authors step through a few examples to demonstrate the application of supermodular functions to relevant problems. One that we highlight is that of Sparse Multiple Linear Regression (SMLR). We focus on this problem due to its close relation to Dictionary Selection (in fact we aim to show that these problems are functionally equivalent) as both problems are under the umbrella of Representation Learning. The goal of demonstrating the equivalence of SMLR and Dictionary Selection is that we can extend the theoretical guarantees and algorithmic foundations in~\cite{BoutsidisLS15} in our future work. 
 \\
 
-SMLR is defined as follows:\\
+\noindent SMLR is defined as follows:\\
 Given two matrices $X\in\R^{m\times n}$, $Y\in\R^{m\times l}$ and an integer $k$, find a matrix  $W\in\R^{n\times l}$ that minimizes $\|XW-Y\|^2_F$ subject to $W$ having at more $k$ non-zero rows. This problem is usually paired with a common assumption/simplification, where the columns of $X$ are adjusted to have unit norm.
 \\
 
-As outlined in Section~\ref{model}, here is a general definition of the Dictionary Selection problem.
+\noindent As outlined in Section~\ref{model}, here is a general definition of the Dictionary Selection problem.
 \begin{alignat}{5}
          & \argmin_{\mathcal{D}, \mathcal{R}} \|X \ -&\mathcal{D}\mathcal{R}\|_F^2  + &\lambda \sum_{i=1}^k  \|\ r_i\|_0     \quad   \\
          &\text{s.t.}  \quad  &\|d_j\|_2 \leq 1&, \forall j=1, ...,n  \quad 
@@ -151,11 +150,53 @@ for some $k$, the greedy extension algorithm needs at most
  \\
 As in \cite{BoutsidisLS15} the authors show that sparse regression can be seen as minimizing a $\alpha$-weakly supermodular function with $\alpha = \| X^+ \|_F$, the extended greedy algorithm presented can be used to solve sparse regression.
 
-\section{Next Steps}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%----------------------------                                      Results                                      ---------------------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results}\label{sec:results}
+
+HERE WE WILL TALK ABOUT THE RESULTS WE GET FROM LEOs EXCURSION INTO THE ANALYSIS
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%----------------------------              Conclusion/Future Steps/Discussion                ---------------------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}\label{sec:discuss}
+
 Our primary next step is in taking measures to develop the structure for an extension of the continuous greedy algorithm from submodular functions. After developing this algorithm, which we intend to pattern after that done in~\cite{Singer16TwoStage}, we will need to develop guarantees for convergence, accuracy and efficiency. There are theoretical benchmarks that have been made in \cite{greedy_selection}, \cite{Krause05near-optimalnonmyopic} and \cite{nonconvexrelax} that we also need to be sure that we meet in the ``dual"-like formulation of supermodular optimization for dictionary selection. Once we have this algorithm in place we will need to apply it some data sets like those in ~\cite{Singer16TwoStage}.
 \\
 \\
 In another step, we would like to implement the extended greedy algorithm presented in \cite{BoutsidisLS15} and compare its performance to other known approximative algorithms in order to better understand its limits or potential flaws. Eventually, this can also serve as a benchmark for the extension of the continuous greedy algorithm we seek to develop.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%----------------------------                                    Past excerpts                                  ---------------------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model/Problem Refocusing} \label{model}
+We don't have any reason to refocus or redefine our project. There was initially some concern that our problem had already been solved in a satisfiable manner. We're happy to report that there is significant room for contribution in the realm of supermodular optimization. We began by developing intuition in supermodular and submodular optimization, highlighted here in this section, and by reviewing recent research in the development of algorithms for both supermodular minimization~\cite{BoutsidisLS15} and for a two-stage formulation of submodular maximization~\cite{Singer16TwoStage}. 
+
+
+
+
+\section{Data}
+So far, we haven't yet determined how we will use data to solidify our project as much of our work at this point is in understanding and developing the theory necessary to develop a new or modified algorithm. As we are looking to develop a novel algorithm to provide a new benchmark for approximate solutions to this class of problems, we will likely assimilate the data and experiments used in  \cite{submod_spectral}, \cite{greedy_selection}, \cite{rIBP}, \cite{Singer16TwoStage}, among others. 
+
+
+\section{Completed Steps}
+
+In our proposal we outlined the following course of action:
+\begin{displayquote}
+Our first step in this project will be to understand the supermodular minimzation framework in which sparse regression can be defined. Then, after having connected and identified sparse regression as supermodular minimization problem we want to show that dictionary selection is a 2-stage sparse regression. \\
+\\
+In the following step we need to understand the greedy algorithm for submodular maximization and its improvement, the continuous greedy algorithm. After this, understanding 2-stage submodular optimization would ideally allow us to connect the pieces, gain insight and finally propose a new algorithm of dealing with the problem.
+\end{displayquote}
+
+We have successfully completed the first of these stages (as will be shown in \ref{supermodTwoStage}) and are on our way toward completing the second.
+
+
+
+\section{Next Steps}
+
 
 \bibliographystyle{plain}
 \bibliography{bibliography}
