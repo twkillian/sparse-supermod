@@ -45,7 +45,7 @@ I.e. the functions are
 \[
 \begin{split}
 f(D, R, X) &:= \|X \ -D R\|_F^2 \\
-g(D, \theta) &:= \sum_{j=1}^m \theta_j (\| d_j\|_2 - 1) \\
+g(D, \theta) &:= \sum_{j=1}^n \theta_j (\| d_j\|_2 - 1) \\
 h(R, \lambda) &:= \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
 \end{split}
 \]
@@ -63,10 +63,43 @@ Let $x \in \R^d$
 l_0(x) := (\#i : x_i \not= 0)
 \]
 \textcolor{red}{here describe different norms...}
+the goal is to find a norm that sort of converges to the infinite + of the l0 norm
 \\
 
-\textcolor{red}{Put here section about possible relaxations of l0 norm}
+\textcolor{red}{Put here section about possible relaxations of l0 norm (related literature)}
 
+\subsubsection{Two stage thoughts}
+We will now relax the problem by formulating it into two stages:
+\begin{enumerate}
+\item solve for fixed $D, \theta$ the minimization to obtain optimal $R, \lambda$.
+\item solve optimization for $D, \theta$ with obtained values
+\item repeat previous steps until done
+\end{enumerate}
+\textcolor{red}{This is actually the method of optimal directions!}
+In the traditional method of optimal directions (\textcolor{red}{ref here}) the subproblem $\min_{R, \lambda} f(D, R, X) + g(D, \theta) + h(R, \lambda)$ is solved either by various relaxation methods (i.e. LASSO, Matching Pursuit(\textcolor{red}{maybe describe here})), however for our approach we want to embedd the problem into a combinatorial optimization framework, which guarantees us bounds on optimality. Recent work done by \cite{weaklyalpha} showed that the subproblem of finding an optimal representation with a given dictionary is equivalent to Sparse Multiple Linear Regression (SMLR) and can be reformulated as a $\alpha$-weakly supermodular function. We will now show how to obtain this formulation:
+Remember
+\[
+\begin{split}
+\min_{R, \lambda} f(D, R, X) + g(D, \theta) + h(R, \lambda) \\
+= \min_{R, \lambda} \|X -D R\|_F^2 + \sum_{j=1}^n \theta_j (\| d_j\|_2 - 1)+ \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
+\end{split}
+\]
+then let $S \subseteq [n]$ be a set of column indices for the dictionary. From now onwards we will assume that the given, fixed dictionary is normalized, i.e. $\forall d_i: \|d_i \|_2 = 1$. This allows us to remove the term $g(D, \theta)$. Define now $D_S$ as the matrix obtained from $D$ with all columns not indexed by $S$ to be set to zero. $D_S^+$ is the pseudoinverse which can be obtained i.e. via singular value decomposition when $D_S = U\Sigma V^T$ through $D_S^+ = V \Sigma^+ U^T$.
+Then the problem can be equivalently stated as
+\[
+\begin{split}
+ \min_{R, \lambda} \|X  -D R\|_F^2 + \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)\\
+ \Longleftrightarrow 
+  \min_{S \subseteq [n], |S| \leq t} \|X  -D_SD_S^+ X\|_F^2
+ \end{split}
+\]
+\cite{weaklyalpha} have shown that the objective function $f(S) := \|X  -D_SD_S^+ X\|_F^2$ of this optimization problem is $\alpha$-weakly supermodular with 
+\[ 
+\alpha = \max_{\tilde{S} \subseteq [n]}\| D_{\tilde{S}}^+ \|_F^2
+\]
+
+\subsection{How to combine it}
+...
 \section{Introduction} \label{introduction}
 Introduce the problem and it's complexities
 
@@ -115,13 +148,7 @@ We will have done it!
 \subsection{Future Work}
 Rule the world 
 
-\begin{thebibliography}{99}
-  \bibitem{submod_spectral}
-  Das, A., Kempe, D., (2011). Submodular meets Spectral: Greedy Algorithms for Subset Selection, Sparse Approximation and Dictionary Selection. \textit{Proceedings of the 28th International Conference on Machine Learnings}.
-  \bibitem{greedy_selection}
-  Cevher, V., Krause, A., (2011). Greedy Dictionary Selection for Sparse Representation. \textit{Selected Topics in Signal Processing, IEEE Journal of 5} (5), pp. 979 - 988.
-  \bibitem{rIBP}
-  Doshi-Velez, F., Williamson, S., (2015). Restricted Indian Buffet Processes. \textit{In submission}. arXiv:1508.06303 [stat.ME]
-  
-\end{thebibliography}
+\bibliographystyle{plain}
+\bibliography{bibliography}
+
 \end{document}
