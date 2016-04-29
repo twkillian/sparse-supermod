@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval, algorithm, algorithmic}
 \usepackage{xcolor}
+\usepackage{hyperref}
 \captionsetup{justification=centering}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\C}{\mathcal{C}}
@@ -36,7 +37,7 @@ Thus for the dictionary learning problem we introduce the problem with constrain
 \textcolor{red}{Description of constraints here}
 
 
-Using lagrange multipliers this can be brought to the general form above
+Using Lagrange multipliers this can be brought to the general form above
 \[
 \min_{D, R, \theta, \lambda} \|X \ -D R\|_F^2 + \sum_{j=1}^m \theta_j (\| d_j\|_2 - 1)+ \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
 \]
@@ -49,6 +50,22 @@ h(R, \lambda) &:= \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
 \end{split}
 \]
 \textcolor{red}{How to bring this to the penalty function form?}
+
+The difficulty in solving this problem comes from the mathematical challenge the $\| . \|_0$ norm yields. To understand this better confer \autoref{fig:l012plot}.
+\begin{figure}
+\centering
+\includegraphics[scale=0.3]{img/l012_norms.png}
+\caption{contour plot of the $l_0, l_1, l_2$ norm at levelset $L_1(f) := \lbrace x \in \R^2 : f(x) = 1 \rbrace $. Note that for any space $\R^d$, the image of the $l_0$ consists of $d+1$ values ($\lbrace 0, ..., d \rbrace $).}
+\label{fig:l012plot}
+\end{figure}
+Let $x \in \R^d$
+\[
+l_0(x) := (\#i : x_i \not= 0)
+\]
+\textcolor{red}{here describe different norms...}
+\\
+
+\textcolor{red}{Put here section about possible relaxations of l0 norm}
 
 \section{Introduction} \label{introduction}
 Introduce the problem and it's complexities

@@ -162,6 +162,8 @@ pythontex-files-*/
 # Latexian
 TSWLatexianTemp*
 
+.ipynb_checkpoints
+
 ## Editors:
 # WinEdt
 *.bak
