@@ -1,5 +1,8 @@
 \documentclass{article}
-\usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval, algorithm, algorithmic,xcolor}
+\usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage[boxruled,procnumbered, linesnumbered]{algorithm2e}
 \usepackage[margin=1in]{geometry}
 \usepackage{setspace}
 \usepackage{csquotes}
@@ -33,7 +36,7 @@ Dictionary selection and sparse regression (problems that we show to be function
 %%%%%%%%%%%%%%%%
 %%    Problem Definition     %%
 %%%%%%%%%%%%%%%%
-\subsection{Problem Definition}\label{sec:problem definition}
+\subsection{Problem Definition}\label{sec:problem}
 \noindent Dictionary learning, in its general form, can be seen as
 \[
 \min_{\D, \Rr, \theta, \lambda} f(\D, \Rr, X) + g(\D, \theta) + h(\Rr, \lambda)
@@ -94,47 +97,18 @@ In order to tackle the problem whose complexity mainly arises from the $\| .\|_0
 
 \noindent Typical optimization problems that use submodular or supermodular functions are generally of the form:\\
 
-\noindent Given a set of objects $V=\{v_1,\ldots,v_n\}$ and a function $f:2^V\to \R$ that returns a real value for any subset. Suppose we are interested in finding the subset that either maximizes or minimizes the function, e.g., ${arg\max}_{S\subseteq V} f(S)$, possible subject to some constraints on the size of $S$. In dictionary selection these constraints are generally on the number of iterms that the subset $S$ can contain, where the function encodes the accuracy of representing $V$ with $S$.
+\noindent Given a set of objects $V=\{v_1,\ldots,v_n\}$ and a function $f:2^V\to \R$ that returns a real value for any subset. Since we are interested in finding a dictionary $\D$ and coding $\Rr$, our objective function becomes the error that arises when reconstructing $X$ with $\D \text{ and } \Rr$ and the set $V$ is represented by the columns of $X$ we choose to determine $\D$, and later use to solve for $\Rr$, with. In solving the minimization we iteratively select a subset $S\subseteq X$ according to ${arg\min}_{S\subseteq X} f(S)$,  subject to some constraints on the size of $S$. As was expressed in~\ref{sec:problem}, we can see that our general formulation of Dictionary Selection:  
+$$\min_{\D, \Rr, \theta, \lambda} \|X  -\D\Rr\|_F^2 + \sum_{j=1}^m \theta_j (\| d_j\|_2 - 1)+ \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)$$
+can be expressed in supermodular forms.\\
 
-\noindent We begin by establishing key definitions and properties of sub-/supermodularity.\\
-
-\noindent A function $f:2^V\to \R$ is \textit{submodular} if for any $A,\ B \subseteq V$ we have : $$f(A) + f(B) \geq f(A\cup B) + f(A\cap B)$$ An alternate and equivalent definition that aids in developing intuition is, in the event that $A\subseteq B \subseteq V$ and $v\in V\setminus B$ we have: $$f(A\cup \{v\}) - f(A) \geq f(B\cup\{v\}) - f(B)$$
-This alternate definition of submodularity demonstrates a key feature of this class of functions; that is the marginal increase of any additional element diminishes with the overall size of the set. This is known as the ``diminishing returns" property of submodular functions.
-
-\noindent Now, a function $f:2^V\to \R$ is said to be \textit{supermodular} if for any sets $A,\ B \subseteq V$ we have : $$f(A) + f(B) \leq f(A\cup B) + f(A\cap B)$$ This leads to a similar ``increasing returns" property given sets $A\subseteq B \subseteq V$ and $v\in V\setminus B$ we have: $$f(A\cup \{v\}) - f(A) \leq f(B\cup\{v\}) - f(B)$$
-
-\noindent It is important to note that submodular and supermodular functions are inverses of each other. That relation motivates the excursion into the development of two-stage supermodular minimization, influenced by previous work in the development of similar methodology for submodular maximization.
-
+\noindent The remainder of this paper is focused on the development of a two-stage supermodular minimization algorithm. We build up to this algorithm via discussion and analysis of recent results. We present a framework of our two-stage minimization method for dictionary selection and compare it to other commonly implemented algorithms, e.g. MOD and  ``Online" learning.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%--------------------             Setting up the Analysis/Developing the Algorithm                --------------------%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Evaluation}\label{sec:eval}
+\section{Analysis and Extension of Recent Results}\label{sec:recentresults}
 
-\subsection{Dictionary Selection as Two-Stage Supermodular Minimization} \label{supermodTwoStage}
-
-In \cite{weaklyalpha}, the authors step through a few examples to demonstrate the application of supermodular functions to relevant problems. One that we highlight is that of Sparse Multiple Linear Regression (SMLR). We focus on this problem due to its close relation to Dictionary Selection (in fact we aim to show that these problems are functionally equivalent) as both problems are under the umbrella of Representation Learning. The goal of demonstrating the equivalence of SMLR and Dictionary Selection is that we can extend the theoretical guarantees and algorithmic foundations in~\cite{weaklyalpha} in our future work. 
-\\
-
-\noindent SMLR is defined as follows:\\
-Given two matrices $X\in\R^{m\times n}$, $Y\in\R^{m\times l}$ and an integer $k$, find a matrix  $W\in\R^{n\times l}$ that minimizes $\|XW-Y\|^2_F$ subject to $W$ having at more $k$ non-zero rows. This problem is usually paired with a common assumption/simplification, where the columns of $X$ are adjusted to have unit norm.
-\\
-
-\noindent As outlined in Section~\ref{model}, here is a general definition of the Dictionary Selection problem.
-\begin{alignat}{5}
-         & \argmin_{\mathcal{D}, \mathcal{R}} \|X \ -&\mathcal{D}\mathcal{R}\|_F^2  + &\lambda \sum_{i=1}^k  \|\ r_i\|_0     \quad   \\
-         &\text{s.t.}  \quad  &\|d_j\|_2 \leq 1&, \forall j=1, ...,n  \quad 
-\end{alignat}
-Thus, given an input dataset $X=[x_1, \dots, x_k], \ x_i\in\R^d, \ X\in\R^{d\times k}$ we wish to find the dictionary $\mathcal{D}\in\R^{d\times n}, \ \mathcal{D} = [d_1, \dots, d_n]$ and a representation $\mathcal{R}=[r_1,\dots,r_k], \ r_i\in\R^n, \ \mathcal{R}\in\R^{n\times k}$, such that both $\|X-\mathcal{D}\mathcal{R}\|_F^2$ is minimized and the representations $r_i$ are "sparse enough" (can be specified column by column as in \cite{rIBP}, or be extended as defined in SMLR).\\
-\\
-\noindent In SMLR, the data matrix $X$ with the determined, sparse $W$, are used to approximate $Y$ while in Dictionary Selection the matrices $\mathcal{D},\ \mathcal{R}$ are determined to approximate the data $X$. In both problems, sparse representations are used to select a combination of data that closely replicates known data. For all intents and purposes these two problems are functionally equivalent with consideration being made to ensure that the sparsity requirements of Dictionary Selection (where there is a limit on the sparsity of each row/column) port into those of SMLR (where the sparsity requirements are placed on the matrix in full). This isn't of too much concern as this can be handled in the definition of each specific application of the Dictionary Selection problem.\\
-\\
-Now, you'll note that the definition of the dictionary selection problem (Equation 6) requires the minimization over the matrices $\mathcal{D}\text{ and }\mathcal{R}$. When taken together, this problem is combinatorially infeasible~\cite{NPHardproof} and non-convex. However, if we separate the problem into a two-stage optimization (where we fix one matrix and solve for the other and then iterate) we can apply well understood convex solution strategies.~\cite{submod_spectral}, \cite{greedy_selection}, \cite{rIBP}, \cite{Singer16TwoStage}. These two stages are: 
-\begin{enumerate}
-\item Fix $\mathcal{D}$, find a sparse coding between it and $X$.
-\item Solve the Dictionary Optimization problem: $\mathcal{D} = X\mathcal{R}^{+}$ following which we renormalize $\mathcal{D}$.
-\end{enumerate}
-Upon iteration we can expect convergence, using guarantees in the continuous greedy algorithm~\cite{greedy_selection}, \cite{submod_spectral}, \cite{submod_sparsecoding} as well as those made in \cite{weaklyalpha}. The commonly known sparse regression can be seen as an instance of sparse multiple linear regression with $Y$ existing only of one column. I.e. $XW-Y$ is a vector. 
+This section is dedicated to a brief analysis and extension of two recent results that we leverage in the development of a two-stage supermodular minimization algorithm. The first is the development of a generalized two-stage submodular maximization algorithm~\cite{Singer16TwoStage}, that we use as a guide in the development of our own supermodular algorithm. The second is the development of supermodular minimization techniques based on an approximation of the supermodular functions used to express various objectives~\cite{weaklyalpha}. We include a brief discussion of these approximation methods. The primary example that the authors use to demonstrate their approximation method is that of Sparse Multiple Linear Regression (SMLR). We show that SMLR is functionally equivalent to Dictionary Selection and that Dictionary Selection is inherently a two-stage problem. This fact allows us to directly use the results from~\cite{weaklyalpha} as a fundamental part of solving for the sparse representation $\Rr$ as shown below in Section~\ref{sec:algorithm}.
 
 \subsection{Weakly-$\alpha$ Supermodularity} \label{weakalpha}
 
@@ -159,6 +133,129 @@ for some $k$, the greedy extension algorithm needs at most
  \\
 As in \cite{weaklyalpha} the authors show that sparse regression can be seen as minimizing a $\alpha$-weakly supermodular function with $\alpha = \| X^+ \|_F$, the extended greedy algorithm presented can be used to solve sparse regression.
 
+\subsection{Dictionary Selection as Two-Stage Supermodular Minimization} \label{supermodTwoStage}
+
+Here we highlight the functional equivalence of Dictionary Selection to SMLR, aided by the fact that both problems are under the umbrella of Representation Learning. The goal of demonstrating the equivalence of SMLR and Dictionary Selection is that we can extend the theoretical guarantees and algorithmic foundations in~\cite{weaklyalpha} in our future work. \\
+
+\noindent SMLR is defined as follows:\\
+Given two matrices $X\in\R^{m\times n}$, $Y\in\R^{m\times l}$ and an integer $k$, find a matrix  $W\in\R^{n\times l}$ that minimizes $\|XW-Y\|^2_F$ subject to $W$ having at more $k$ non-zero rows. This problem is usually paired with a common assumption/simplification, where the columns of $X$ are adjusted to have unit norm.
+\\
+
+\noindent As outlined in Section~\ref{model}, here is a general definition of the Dictionary Selection problem.
+\begin{alignat}{5}
+         & \argmin_{\D, \Rr} \|X \ -&\D\Rr\|_F^2  + &\lambda \sum_{i=1}^k  \|\ r_i\|_0     \quad   \\
+         &\text{s.t.}  \quad  &\|d_j\|_2 \leq 1&, \forall j=1, ...,n  \quad 
+\end{alignat}
+Thus, given an input dataset $X=[x_1, \dots, x_k], \ x_i\in\R^d, \ X\in\R^{d\times k}$ we wish to find the dictionary $\D\in\R^{d\times n}, \ \D = [d_1, \dots, d_n]$ and a representation $\Rr=[r_1,\dots,r_k], \ r_i\in\R^n, \ \Rr\in\R^{n\times k}$, such that both $\|X-\D\Rr\|_F^2$ is minimized and the representations $r_i$ are "sparse enough" (can be specified column by column as in \cite{rIBP}, or be extended as defined in SMLR).\\
+\\
+\noindent In SMLR, the data matrix $X$ with the determined, sparse $W$, are used to approximate $Y$ while in Dictionary Selection the matrices $\D,\ \Rr$ are determined to approximate the data $X$. In both problems, sparse representations are used to select a combination of data that closely replicates known data. For all intents and purposes these two problems are functionally equivalent with consideration being made to ensure that the sparsity requirements of Dictionary Selection (where there is a limit on the sparsity of each row/column) port into those of SMLR (where the sparsity requirements are placed on the matrix in full). This isn't of too much concern as this can be handled in the definition of each specific application of the Dictionary Selection problem.\\
+\\
+Now, you'll note that the definition of the dictionary selection problem (Equation 6) requires the minimization over the matrices $\D\text{ and }\Rr$. When taken together, this problem is combinatorially infeasible~\cite{NPHardproof} and non-convex. However, if we separate the problem into a two-stage optimization (where we fix one matrix and solve for the other and then iterate) we can apply well understood convex solution strategies.~\cite{submod_spectral}, \cite{greedy_selection}, \cite{rIBP}, \cite{Singer16TwoStage}. These two stages are: 
+\begin{enumerate}
+\item Fix $\D$, find a sparse coding between it and $X$.
+\item Solve the Dictionary Optimization problem: $\D = X\Rr^{+}$ following which we renormalize $\D$.
+\end{enumerate}
+Upon iteration we can expect convergence, using guarantees in the continuous greedy algorithm~\cite{greedy_selection}, \cite{submod_spectral}, \cite{submod_sparsecoding} as well as those made in \cite{weaklyalpha}. The commonly known sparse regression can be seen as an instance of sparse multiple linear regression with $Y$ existing only of one column. I.e. $XW-Y$ is a vector. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%----------------------------                                    Algorithm                                      ---------------------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Two-stage Supermodular Minimization Algorithm}\label{sec:algorithm}
+
+Recall the general form of the Dictionary Selection Problem:
+
+$$\min_{\D, \Rr, \theta, \lambda} \|X  -\D\Rr\|_F^2 + \sum_{j=1}^m \theta_j (\| d_j\|_2 - 1)+ \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)$$
+
+\noindent We now relax the problem by formulating it into the two stages described above:
+\begin{enumerate}
+\item solve for fixed $\D, \theta$ the minimization to obtain optimal $\Rr, \lambda$.
+\item solve optimization for $\D, \theta$ with obtained values
+\item repeat previous steps until done
+\end{enumerate}
+
+\noindent In generic terms, this is similar to the method of optimal directions. In the traditional method of optimal directions~\cite{MOD} the subproblem $\min_{\Rr, \lambda} f(\D, \Rr, X) + g(\D, \theta) + h(\R, \lambda)$ is solved either by various relaxation methods (i.e. LASSO, Matching Pursuit, etc.), however for our approach we want to embed the problem into a combinatorial optimization framework, which guarantees us bounds on optimality. Using~\cite{weaklyalpha} we reformulate the Dictionary Selection with $\alpha$-weakly supermodular functions. We will now show how to obtain this formulation:
+Recall that
+\begin{align*}
+\min_{\Rr, \lambda}\quad &f(\D, \Rr, X) &+& \qquad\qquad g(\D, \theta) &+& \qquad\qquad h(\Rr, \lambda) \\
+= \min_{\Rr, \lambda}\quad &\|X -\D \Rr\|_F^2 &+& \qquad\qquad\sum_{j=1}^n \theta_j (\| d_j\|_2 - 1) &+& \qquad\qquad\sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
+\end{align*}
+then let $S \subseteq [n]$ be a set of column indices for the dictionary. From now onwards we will assume that the given, fixed dictionary is normalized, i.e. $\forall d_i: \|d_i \|_2 = 1$. This allows us to remove the term $g(\D, \theta)$. Define now $\D_S$ as the matrix obtained from $\D$ with all columns not indexed by $S$ to be set to zero.
+\[
+(\D_S)_{ij} := \begin{cases}
+0 \quad &j \notin S \\
+\D_{ij} \quad &j\in S
+\end{cases}
+\]
+
+\noindent$\D_S^+$ is the pseudoinverse which can be obtained i.e. via singular value decomposition when $\D_S = U\Sigma V^T$ through $\D_S^+ = V \Sigma^+ U^T$.
+Then the problem can be equivalently stated as
+\[
+\begin{split}
+ \min_{\Rr, \lambda} \|X  -\D \Rr\|_F^2 + \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)\\
+ \Longleftrightarrow 
+  \min_{S \subseteq [n], |S| \leq t} \|X  -\D_S\D_S^+ X\|_F^2
+ \end{split}
+\]
+\cite{weaklyalpha} have shown that the objective function $f(S) := \|X  -\D_S\D_S^+ X\|_F^2$ of this optimization problem is $\alpha$-weakly supermodular with 
+\[ 
+\alpha = \max_{\tilde{S} \subseteq [n]}\| \D_{\tilde{S}}^+ \|_F^2
+\]
+
+\subsection{How to combine it}
+For the two stage formulation we can generally think of the problem as of adapting the idea of the method of optimal directions but instead of projecting the given representation onto the dictionary we strive for an additional minimization problem:
+Let $f_1, ..., f_m$ be instances of the SMLR problem with different dictionaries $D_k$
+\[
+f_k := \min_{\D_k, \Rr, \lambda} \|X  -\D_k \Rr\|_F^2 + \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
+\]
+ Then the dictionary problem can be seen as
+\[
+\min_{\D, \theta} q(f_1, ..., f_m) + \sum_{j=1}^n \theta_j (\| d_j\|_2 - 1)
+\]
+for some combination function $q$. We now ask, which properties such a combination function ideally should satisfy.
+
+ \ \\
+ One choice for $q$ could be 
+ \[q(f_1(\D, \theta), ..., f_m(\D, \theta)) := \sum_{i=1}^m f_i(\D, \theta)\]
+  another one to minimize the product of the SMLR instances. Reformulating it with a logarithm might give even better results with increased computationally tractability 
+ \[
+ q(f_1(\D, \theta), ..., f_m(\D, \theta)) = \sum_{i=1}^m \log (f_i(\D, \theta))
+ \]
+ 
+ \subsubsection*{Algorithm proposals}
+ In the following we proprose a general randomized greedy algorithm to solve the dictionary learning problem.
+ 
+ \begin{centering}
+\begin{algorithm}[H]
+\SetKwData{Left}{left}
+\SetKwData{This}{this}
+\SetKwData{Up}{up}
+\SetKwFunction{RandomDict}{RandomDictionary}
+\SetKwFunction{alphaSup}{$\alpha$-GreedySolver}
+\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+
+\Input{A data matrix $X \in \R^{d \times k}$}
+\Output{A dictionary $\D \in \R^{d \times n}$ and representation $\Rr \in \R^{n \times k}$}
+
+$D_0 \gets$ \RandomDict{$-1$, $1$} \tcp*[f]{assert $\D_0 \not= 0$} \\
+normalize s.t. $\| (\D_0)_{*j}\|_2 = 1$\\
+$S_0, \Rr_0 \gets $ \alphaSup{$X$, $\D$, $t$}\\
+$m \gets 0$\\
+ \While{$m < \mathrm{MAXSTEPS}$ }{
+ 	$\D_{m+1} \gets X_{S_m \setminus \lbrace q\rbrace \cup \lbrace p\rbrace}$\\
+	normalize s.t. $\| (\D_{m+1})_{*j}\|_2 = 1$\\
+	$S, \Rr \gets $ \alphaSup{$X$, $\D_{m+1}$, $t$} \\
+	\If{$\| X - \D_{m+1}\Rr\|_F^2 < \| X - \D_m\Rr_m\|_F^2$} {
+		$S_{m+1}, \Rr_{m+1}  \gets S, \Rr$
+	}
+	$m \gets m + 1$\\
+  }
+ \caption{General randomized greedy algorithm for Sparse Dictionary Learning}
+ \label{algo:randgeneral}
+\end{algorithm}
+\end{centering}
+\ \\
+
+\noindent We start by initializing a non-zero random dictionary. To allow for all directions, negative and positive values should be picked. To restrict the dictionary size, normalization along columns is done in lines $2$ and $8$. We use the greedy algorithm as proposed in~\cite{weaklyalpha} to solve for a given dictionary the SMLR problem by using $t$ steps (yielding $t$ columns for representation). The indices of the columns that best solve the SMLR are returned as set $S$ along a representation $\Rr$. We then iteratively refine the solution. Therefore one observation is crucial: Given a set of columns $S$ that represents the indices of non-zero columns of $R$, only $|S|$ corresponding columns in $D$ obtained through matrix multiplication will contribute something to the norm. Thus, in order to improve the solution we need to exchange one (or more) columns of the current set $S$ with some other column that might give a better solution. To obtain a new dictionary candidate we construct it by using a similar argument via the data matrix $X$. I.e. choose randomly a column index $q \in S$ that will be removed and add another random column index $p \in \lbrace 1, ..., k \rbrace \setminus S$. This step is performed in line 7, \ref{algo:randgeneral}. We then obtain the dictionary candidate by $l_2$-column normalization and solve the resulting SMLR problem via the $\alpha$-weakly supermodular greedy algorithm. If the new solution is better than the old one, we keep it, else we perform another round of local search.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%----------------------------                                      Results                                      ---------------------------%%
@@ -177,34 +274,6 @@ Our primary next step is in taking measures to develop the structure for an exte
 \\
 \\
 In another step, we would like to implement the extended greedy algorithm presented in \cite{weaklyalpha} and compare its performance to other known approximative algorithms in order to better understand its limits or potential flaws. Eventually, this can also serve as a benchmark for the extension of the continuous greedy algorithm we seek to develop.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%----------------------------                                    Past excerpts                                  ---------------------------%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Model/Problem Refocusing} \label{model}
-We don't have any reason to refocus or redefine our project. There was initially some concern that our problem had already been solved in a satisfiable manner. We're happy to report that there is significant room for contribution in the realm of supermodular optimization. We began by developing intuition in supermodular and submodular optimization, highlighted here in this section, and by reviewing recent research in the development of algorithms for both supermodular minimization~\cite{weaklyalpha} and for a two-stage formulation of submodular maximization~\cite{Singer16TwoStage}. 
-
-
-
-
-\section{Data}
-So far, we haven't yet determined how we will use data to solidify our project as much of our work at this point is in understanding and developing the theory necessary to develop a new or modified algorithm. As we are looking to develop a novel algorithm to provide a new benchmark for approximate solutions to this class of problems, we will likely assimilate the data and experiments used in  \cite{submod_spectral}, \cite{greedy_selection}, \cite{rIBP}, \cite{Singer16TwoStage}, among others. 
-
-
-\section{Completed Steps}
-
-In our proposal we outlined the following course of action:
-\begin{displayquote}
-Our first step in this project will be to understand the supermodular minimzation framework in which sparse regression can be defined. Then, after having connected and identified sparse regression as supermodular minimization problem we want to show that dictionary selection is a 2-stage sparse regression. \\
-\\
-In the following step we need to understand the greedy algorithm for submodular maximization and its improvement, the continuous greedy algorithm. After this, understanding 2-stage submodular optimization would ideally allow us to connect the pieces, gain insight and finally propose a new algorithm of dealing with the problem.
-\end{displayquote}
-
-We have successfully completed the first of these stages (as will be shown in \ref{supermodTwoStage}) and are on our way toward completing the second.
-
-
-
-\section{Next Steps}
 
 
 \bibliographystyle{plain}
