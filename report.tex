@@ -1,7 +1,14 @@
 \documentclass{article}
-\usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval, algorithm, algorithmic}
+\usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval}
+
+
+% packages added LEO (remove algorithm, algorithmic)
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage[boxruled,procnumbered, linesnumbered]{algorithm2e}
+% packages added LEO end
+
+
 \captionsetup{justification=centering}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\C}{\mathcal{C}}
@@ -84,7 +91,15 @@ Remember
 = \min_{R, \lambda} \|X -D R\|_F^2 + \sum_{j=1}^n \theta_j (\| d_j\|_2 - 1)+ \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
 \end{split}
 \]
-then let $S \subseteq [n]$ be a set of column indices for the dictionary. From now onwards we will assume that the given, fixed dictionary is normalized, i.e. $\forall d_i: \|d_i \|_2 = 1$. This allows us to remove the term $g(D, \theta)$. Define now $D_S$ as the matrix obtained from $D$ with all columns not indexed by $S$ to be set to zero. $D_S^+$ is the pseudoinverse which can be obtained i.e. via singular value decomposition when $D_S = U\Sigma V^T$ through $D_S^+ = V \Sigma^+ U^T$.
+then let $S \subseteq [n]$ be a set of column indices for the dictionary. From now onwards we will assume that the given, fixed dictionary is normalized, i.e. $\forall d_i: \|d_i \|_2 = 1$. This allows us to remove the term $g(D, \theta)$. Define now $D_S$ as the matrix obtained from $D$ with all columns not indexed by $S$ to be set to zero.
+\[
+(D_S)_{ij} := \begin{cases}
+0 \quad &j \notin S \\
+D_{ij} \quad &j\in S
+\end{cases}
+\]
+
+$D_S^+$ is the pseudoinverse which can be obtained i.e. via singular value decomposition when $D_S = U\Sigma V^T$ through $D_S^+ = V \Sigma^+ U^T$.
 Then the problem can be equivalently stated as
 \[
 \begin{split}
@@ -100,13 +115,17 @@ Then the problem can be equivalently stated as
 
 \subsection{How to combine it}
 For the two stage formulation we can generally think of the problem as of adapting the idea of the method of optimal directions but instead of projecting the given representation onto the dictionary we strive for an additional minimization problem:
-Let $f_1, ..., f_m$ be instances of the SMLR problem. Then the dictionary problem can be seen as
+Let $f_1, ..., f_m$ be instances of the SMLR problem with different dictionaries $D_k$
 \[
-\min_{D, \theta} q(f_1(D, \theta), ..., f_m(D, \theta)) + \sum_{j=1}^n \theta_j (\| d_j\|_2 - 1)
+f_k := \min_{D_k, R, \lambda} \|X  -D_k R\|_F^2 + \sum_{i=1}^k \lambda_i (\| r_i \|_0 - t)
 \]
-for some combination function $q$. What properties should the combination function satisfy?
+ Then the dictionary problem can be seen as
+\[
+\min_{D, \theta} q(f_1, ..., f_m) + \sum_{j=1}^n \theta_j (\| d_j\|_2 - 1)
+\]
+for some combination function $q$. We now ask, which properties such a combination function ideally should satisfy.
 \\
-\textcolor{red}{that is a great question! Can we formulate some ideas, thoughts on what it should look like?}
+\textcolor{red}{that is a great question! Can we formulate some ideas, thoughts on what it should look like? I am still unsure about the above formulation...}
  \\
  One choice for $q$ could be 
  \[q(f_1(D, \theta), ..., f_m(D, \theta)) := \sum_{i=1}^m f_i(D, \theta)\]
@@ -116,53 +135,41 @@ for some combination function $q$. What properties should the combination functi
  \]
  (\text{red}{we can omit the logical step of log'ing also the lambda term because it is a constraint...})
  
-\section{Introduction} \label{introduction}
-Introduce the problem and it's complexities
-
-\section{Background Information} \label{background}
-\subsection{Background}
-Here we'll want to add some information about Sparse regression, set functions and definitions of sub modular and super modular, Dictionary Selection, Greedy Methods, etc.
-
-\subsection{Related Work}
-A simple overview of prior work
-
-
-\section{Methods} \label{methods}
-
-Place holder section to begin to outline our work
-
-\begin{algorithm}
-  \caption{Notional algorithm}
-  \label{alg:compass}
-\begin{algorithmic}
-  \STATE  Figure out optimal arrangement of rows and columns of input data
-  \WHILE{there's still time in the semester}
-  \IF{$f(p_k + s_k\lambda_i) < f(p_k)$ for some $\lambda_i$}
-  \STATE $p_{k+1} = p_k + s_k\lambda_i$
-  \STATE $s_{k+1} = s_k$
-  \ELSE
-  \STATE $p_{k+1} = p_{k}$
-  \STATE $s_{k+1} = \alpha s_k$
-  \ENDIF
-  \ENDWHILE
-  \RETURN VICTORIOUS
-\end{algorithmic}
-\end{algorithm}
-
-\section{Experiments} \label{experiments}
-
-Hold for applying our methods
-
-\subsection{Results} \label{results}
-
-The results of our algorithms against others
-
-\section{Conclusions \& Future Work}
-\subsection{Conclusions}
-We will have done it!
+ \subsubsection*{Algorithm proposals}
+ In the following we proprose a general randomized greedy algorithm to solve the dictionary learning problem.
  
-\subsection{Future Work}
-Rule the world 
+ \begin{centering}
+\begin{algorithm}[H]
+\SetKwData{Left}{left}
+\SetKwData{This}{this}
+\SetKwData{Up}{up}
+\SetKwFunction{RandomDict}{RandomDictionary}
+\SetKwFunction{alphaSup}{$\alpha$-GreedySolver}
+\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+
+\Input{A data matrix $X \in \R^{d \times k}$}
+\Output{A dictionary $D \in \R^{d \times n}$ and representation $R \in \R^{n \times k}$}
+
+$D_0 \gets$ \RandomDict{$-1$, $1$} \tcp*[f]{assert $D_0 \not= 0$} \\
+normalize s.t. $\| (D_0)_{*j}\|_2 = 1$\\
+$S_0, R_0 \gets $ \alphaSup{$X$, $D$, $t$}\\
+$m \gets 0$\\
+ \While{$m < \mathrm{MAXSTEPS}$ }{
+ 	$D_{m+1} \gets X_{S_m \setminus \lbrace q\rbrace \cup \lbrace p\rbrace}$\\
+	normalize s.t. $\| (D_{m+1})_{*j}\|_2 = 1$\\
+	$S, R \gets $ \alphaSup{$X$, $D_{m+1}$, $t$} \\
+	\If{$\| X - D_{m+1}R\|_F^2 < \| X - D_mR_m\|_F^2$} {
+		$S_{m+1}, R_{m+1}  \gets S, R$
+	}
+	$m \gets m + 1$\\
+  }
+ \caption{General randomized greedy algorithm for Sparse Dictionary Learning}
+ \label{algo:randgeneral}
+\end{algorithm}
+\end{centering}
+We start by initializing a random dictionary that is non-zero. To allow for all directions negative and positive values should be picked. To restrict the dictionary size, normalization along columns is done in lines $2$ and $8$. We use the greedy algorithm as proposed in \cite{alphaweakly} to solve for a given dictionary the SMLR problem by using $t$ steps (yielding $t$ columns for representation). The indices of the columns that best solve the SMLR are returned as set $S$ along a representation $R$. We then iteratively refine the solution. Therefore one observation is crucial: Given a set of columns $S$ that represents the indices of non-zero columns of $R$, only $|S|$ corresponding columns in $D$ obtained through matrix multiplication will contribute something to the norm. Thus, in order to improve the solution we need to exchange one (or more) columns of the current set $S$ with some other column that might give a better solution. To obtain a new dictionary candidate we construct it by using a similar argument via the data matrix $X$. I.e. choose randomly a column index $q \in S$ that will be removed and add another random column index $p \in \lbrace 1, ..., k \rbrace \setminus S$. This step is performed in line 7, \autoref{algo:randgeneral}. We then obtain the dictionary candidate by $l_2$-column normalization and solve the resulting SMLR problem via the $alpha$-weakly supermodular greedy algorithm. If the new solution is better than the old one, we keep it, else we perform another round of local search.
+
+
 
 \bibliographystyle{plain}
 \bibliography{bibliography}
