@@ -3,8 +3,9 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage[boxruled,procnumbered, linesnumbered]{algorithm2e}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=0.8in]{geometry}
 \usepackage{setspace}
+\onehalfspacing
 \usepackage{csquotes}
 
 \captionsetup{justification=centering}
@@ -15,17 +16,44 @@
 \newcommand{\X}{\mathcal{X}}
 \DeclareMathOperator*{\argmin}{\arg\!\min}
 
-\onehalfspacing
+\doublespacing
+
+\makeatletter
+\newcommand*{\toccontents}{\@starttoc{toc}}
+\makeatother
 
 \begin{document}
 \title{AM221 Final Project \\ \large Dictionary Selection Under a Supermodular Assumption}
-\author{Taylor Killian \& Leonhard Spiegelberg}
+%\author{ Killian \& }
+\singlespacing
+\author{
+  Taylor Killian\\
+           Institute for Applied Computational Science\\
+	52 Oxford Street\\
+	Cambridge, MA\\
+  \texttt{taylorkillian@g.harvard.edu }
+  \and
+  Leonhard Spiegelberg\\
+         Institute for Applied Computational Science\\
+	52 Oxford Street\\
+	Cambridge, MA\\
+ \texttt{spiegelberg@g.harvard.edu}
+}
 \maketitle
-
+\doublespacing
 \begin{abstract}
 We attempt to develop a method by which to solve dictionary selection under a supermodular assumption. This method is motivated primarily by the work of Singer et al. (2016)~\cite{Singer16TwoStage} where a two-stage submodular maximization generalization was developed. The development of a two-stage supermodular minimization algorithm to address Sparse Dictionary Selection utilizes approximation results derived by Boutsidis et al. (2015)~\cite{weaklyalpha} for supermodular optimization. We show that Sparse Dictionary Selection is functionally equivalent to Sparse Multi Linear Regression which allows us to leverage~\cite{weaklyalpha}. We analyze and experiment with an implementation of our two-stage optimization routine and compare it to current methods. With this project we have laid the ground for further exploration into the formalization of the two-stage method that we propose here.
 \end{abstract}
 
+\vfill
+\onehalfspacing
+\begin{center}
+\bfseries\contentsname
+\end{center}
+\toccontents
+\clearpage
+
+\doublespacing
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%-------------------------------                              Introduction                               -------------------------------%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -275,7 +303,7 @@ Our primary next step is in taking measures to develop the structure for an exte
 \\
 In another step, we would like to implement the extended greedy algorithm presented in \cite{weaklyalpha} and compare its performance to other known approximative algorithms in order to better understand its limits or potential flaws. Eventually, this can also serve as a benchmark for the extension of the continuous greedy algorithm we seek to develop.
 
-
+\onehalfspacing
 \bibliographystyle{plain}
 \bibliography{bibliography}
 

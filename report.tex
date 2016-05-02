@@ -6,6 +6,8 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage[boxruled,procnumbered, linesnumbered]{algorithm2e}
+\usepackage{setspace}
+\onehalfspacing
 % packages added LEO end
 
 
@@ -167,7 +169,7 @@ $m \gets 0$\\
  \label{algo:randgeneral}
 \end{algorithm}
 \end{centering}
-We start by initializing a random dictionary that is non-zero. To allow for all directions negative and positive values should be picked. To restrict the dictionary size, normalization along columns is done in lines $2$ and $8$. We use the greedy algorithm as proposed in \cite{alphaweakly} to solve for a given dictionary the SMLR problem by using $t$ steps (yielding $t$ columns for representation). The indices of the columns that best solve the SMLR are returned as set $S$ along a representation $R$. We then iteratively refine the solution. Therefore one observation is crucial: Given a set of columns $S$ that represents the indices of non-zero columns of $R$, only $|S|$ corresponding columns in $D$ obtained through matrix multiplication will contribute something to the norm. Thus, in order to improve the solution we need to exchange one (or more) columns of the current set $S$ with some other column that might give a better solution. To obtain a new dictionary candidate we construct it by using a similar argument via the data matrix $X$. I.e. choose randomly a column index $q \in S$ that will be removed and add another random column index $p \in \lbrace 1, ..., k \rbrace \setminus S$. This step is performed in line 7, \autoref{algo:randgeneral}. We then obtain the dictionary candidate by $l_2$-column normalization and solve the resulting SMLR problem via the $alpha$-weakly supermodular greedy algorithm. If the new solution is better than the old one, we keep it, else we perform another round of local search.
+We start by initializing a random dictionary that is non-zero. To allow for all directions negative and positive values should be picked. To restrict the dictionary size, normalization along columns is done in lines $2$ and $8$. We use the greedy algorithm as proposed in \cite{weaklyalpha} to solve for a given dictionary the SMLR problem by using $t$ steps (yielding $t$ columns for representation). The indices of the columns that best solve the SMLR are returned as set $S$ along a representation $R$. We then iteratively refine the solution. Therefore one observation is crucial: Given a set of columns $S$ that represents the indices of non-zero columns of $R$, only $|S|$ corresponding columns in $D$ obtained through matrix multiplication will contribute something to the norm. Thus, in order to improve the solution we need to exchange one (or more) columns of the current set $S$ with some other column that might give a better solution. To obtain a new dictionary candidate we construct it by using a similar argument via the data matrix $X$. I.e. choose randomly a column index $q \in S$ that will be removed and add another random column index $p \in \lbrace 1, ..., k \rbrace \setminus S$. This step is performed in line 7, \autoref{algo:randgeneral}. We then obtain the dictionary candidate by $l_2$-column normalization and solve the resulting SMLR problem via the $alpha$-weakly supermodular greedy algorithm. If the new solution is better than the old one, we keep it, else we perform another round of local search.
 
 
 
