@@ -3,7 +3,7 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage[boxruled,procnumbered, linesnumbered]{algorithm2e}
-\usepackage[margin=0.75in]{geometry}
+\usepackage[margin=1in]{geometry}
 \usepackage{setspace}
 \usepackage{csquotes}
 
@@ -15,8 +15,8 @@
 \newcommand{\X}{\mathcal{X}}
 \DeclareMathOperator*{\argmin}{\arg\!\min}
 
-\doublespacing
-%\onehalfspacing
+%\doublespacing
+\onehalfspacing
 
 \begin{document}
 \title{AM221 Final Project \\ \large Dictionary Selection Under a Supermodular Assumption}
@@ -296,12 +296,9 @@ As shown in Figure~\ref{fig:ouralg}, our algorithm improves on the naive bound w
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%----------------------------              Conclusion/Future Steps/Discussion                ---------------------------%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}\label{sec:discuss}
+\section{Conclusion}\label{sec:conclude}
+This paper summarizes the development of a two-stage approach to supermodular minimization applied to Dictionary Selection which utilizes recent results from~\cite{weaklyalpha} and~\cite{Singer16TwoStage}. We showed that Dictionary Selection is functionally equivalent to Sparse Multiple Linear Regression. Now that we've developed an algorithm, we intend to refine our assumptions and hope to apply some of the analysis in~\cite{Singer16TwoStage} in order to develop guarantees for convergence, accuracy and efficiency. There are theoretical benchmarks that have been made for submodular optimization in \cite{greedy_selection}, \cite{Krause05near-optimalnonmyopic} and \cite{nonconvexrelax} that we also need to be sure that we approach in the ``dual"-like formulation of supermodular optimization for dictionary selection.
 
-Our primary next step is in taking measures to develop the structure for an extension of the continuous greedy algorithm from submodular functions. After developing this algorithm, which we intend to pattern after that done in~\cite{Singer16TwoStage}, we will need to develop guarantees for convergence, accuracy and efficiency. There are theoretical benchmarks that have been made in \cite{greedy_selection}, \cite{Krause05near-optimalnonmyopic} and \cite{nonconvexrelax} that we also need to be sure that we meet in the ``dual"-like formulation of supermodular optimization for dictionary selection. Once we have this algorithm in place we will need to apply it some data sets like those in ~\cite{Singer16TwoStage}.
-\\
-\\
-In another step, we would like to implement the extended greedy algorithm presented in \cite{weaklyalpha} and compare its performance to other known approximative algorithms in order to better understand its limits or potential flaws. Eventually, this can also serve as a benchmark for the extension of the continuous greedy algorithm we seek to develop.
 
 
 \bibliographystyle{plain}
