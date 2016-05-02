@@ -77,8 +77,8 @@ $\D \in \R^{d\times n}, \   \D~=~[d_1, \dots, d_n]$ and a representation $\Rr \i
 Thus, for the dictionary learning problem we introduce the problem with constraints
 \begin{align*}
          &\min_{\D, \Rr} \ \|X  -\D \Rr\|_F^2   \quad   \\
-         \text{s.t.}  \quad  &\|d_j\|_2 \leq 1, \ &\forall j=1, ...,n  \quad \\
-          \quad  &\|r_i\|_0 \leq t,  \ &\forall i=1, ...,k  \quad 
+         \text{s.t.}  \quad  &\|d_j\|_2 \leq 1, \quad \forall j=1, ...,n  \quad \\
+          \quad  &\|r_i\|_0 \leq t,  \quad \forall i=1, ...,k  \quad 
 \end{align*}
 
 \noindent Here the constraints express the expectation that both $\D$ is controllably determined and that $\Rr$ is adequately sparse. The difficulty in solving this problem comes from the mathematical challenge the $\| . \|_0$ norm yields. This norm is defined as:\\ 
@@ -140,7 +140,7 @@ can be expressed in supermodular forms.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Analysis and Extension of Recent Results}\label{sec:recentresults}
 
-This section is dedicated to a brief analysis and extension of two recent results that we leverage in the development of a two-stage supermodular minimization algorithm. The first is the development of a generalized two-stage submodular maximization algorithm~\cite{Singer16TwoStage}, that we use as a guide in the development of our own supermodular algorithm. The second is the development of supermodular minimization techniques based on an approximation of the supermodular functions used to express various objectives~\cite{weaklyalpha}. We include a brief discussion of these approximation methods. The primary example that the authors use to demonstrate their approximation method is that of Sparse Multiple Linear Regression (SMLR). We show that SMLR is functionally equivalent to Dictionary Selection and that Dictionary Selection is inherently a two-stage problem. This fact allows us to directly use the results from~\cite{weaklyalpha} as a fundamental part of solving for the sparse representation $\Rr$ as shown below in Section~\ref{sec:algorithm}.
+This section is dedicated to a brief analysis and extension of two recent results that we leverage in the development of a two-stage supermodular minimization algorithm. The first is the development of a generalized two-stage submodular maximization algorithm~\cite{Singer16TwoStage}, that we use as a guide in the development of our own supermodular algorithm. The second is the development of supermodular minimization techniques based on an approximation of the supermodular functions used to express various objectives~\cite{weaklyalpha}. We include a brief discussion of these approximation methods. The primary example that the authors use to demonstrate their approximation method is that of Sparse Multiple Linear Regression (SMLR). We show that SMLR is functionally equivalent to Dictionary Selection and that Dictionary Selection is inherently a two-stage problem. This fact allows us to directly use the results from~\cite{weaklyalpha} as a fundamental part of solving for the sparse representation $\Rr$, shown below in Section~\ref{sec:algorithm}.
 
 \subsection{Weakly-$\alpha$ Supermodularity} \label{weakalpha}
 
@@ -291,7 +291,7 @@ $m \gets 0$\\
 \end{centering}
 \ \\
 
-\noindent We start by initializing a non-zero random dictionary (with excluding $0$ as trivial solution). To allow for all directions, negative and positive values should be picked. To restrict the dictionary size, normalization along columns is done in lines $2$ and $8$. We use the greedy algorithm as proposed in~\cite{weaklyalpha} in lines $3, 8$ to solve for a given dictionary the SMLR problem by using $t$ steps (yielding $t$ columns for representation). The indices of the columns that best solve the SMLR are returned as set $S$ along a representation $\Rr$. We then iteratively refine the solution.
+\noindent We start by initializing a non-zero random dictionary (excluding $0$ as trivial solution). To allow for all directions, negative and positive values are permitted. To restrict the dictionary size, normalization along columns is done in lines $2$ and $8$. We use the greedy algorithm as proposed in~\cite{weaklyalpha} in lines $3, 8$ to solve for a given dictionary the SMLR problem by using $t$ steps (yielding $t$ columns for representation). The indices of the columns that best solve the SMLR are returned as set $S$ along a representation $\Rr$. We then iteratively refine the solution.
 \\
 \\
 Therefore one observation is crucial: Given a set of columns $S$ that represents the indices of non-zero columns of $R$, only $|S|$ corresponding columns in $D$ obtained through matrix multiplication will contribute value-wise to the norm. Thus, in order to improve the solution we need to exchange one (or more) columns of the current set $S$ with some other column that might give a better solution. To obtain a new dictionary candidate we construct it by using a similar argument via the data matrix $X$. I.e. choose randomly a column index $q \in S$ that will be removed and add another random column index $p \in \lbrace 1, ..., k \rbrace \setminus S$. This step is performed in line 7, \ref{algo:randgeneral}. We then obtain the dictionary candidate by $l_2$-column normalization and solve the resulting SMLR problem via the $\alpha$-weakly supermodular greedy algorithm. If the new solution is better than the old one, we keep it, else we perform another round of local search.
