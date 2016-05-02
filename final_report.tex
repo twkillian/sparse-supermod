@@ -3,7 +3,7 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage[boxruled,procnumbered, linesnumbered]{algorithm2e}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=0.75in]{geometry}
 \usepackage{setspace}
 \usepackage{csquotes}
 
@@ -15,7 +15,8 @@
 \newcommand{\X}{\mathcal{X}}
 \DeclareMathOperator*{\argmin}{\arg\!\min}
 
-\onehalfspacing
+\doublespacing
+%\onehalfspacing
 
 \begin{document}
 \title{AM221 Final Project \\ \large Dictionary Selection Under a Supermodular Assumption}
@@ -262,7 +263,34 @@ $m \gets 0$\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}\label{sec:results}
 
-HERE WE WILL TALK ABOUT THE RESULTS WE GET FROM LEOs EXCURSION INTO THE ANALYSIS
+In this section we briefly compare the results of how the approximation algorithm detailed in Section~\ref{sec:recentresults} performs on SMLR in comparison with other well established methods. The two methods that we chose to evaluate due to their straight forward implementation were those of Method of Optimal Directions (MOD)~\cite{MOD} and the ``Online" dictionary learning algorithm developed by Mairal et. al~\cite{mairal09}. We also evaluate the performance of our algorithm against a notional bound which is just the naive inversion of the equation $\D_0\Rr = X$ where $\D_0$ is the initial dictionary. That is, we compare the performance of our algorithm against the bound $\|X-\D_0\Rr_0\|_F^2$ where $\Rr_0 = \D_0^+ X$.
+
+\subsection{Weakly-$\alpha$ Minimization v. MOD, ``Online" Dictionary Learning}
+
+The Method of Optimal Directions is an example of a two-stage iterative method used to calculate the sparse registration and dictionary of basis elements given some input data. What MOD does is that it takes in an initial $\D_0$, solves for $\Rr_0$ via some sparse coding algorithm (we used LARS) and then updates the estimate of $\D$ by evaluating the singular value decomposition of the sparse registration $\Rr_0$ and using the left and right singular vectors along with the reciprocal of the singular values you can approximate the pseudoinverse solution to $X = \D\Rr$ for $\D$. After applying these stages a number of times, you converge to the optimal choices for $\D$ and $\Rr$.\\
+
+\noindent The online approach suggested by Mairal et. al.~\cite{mairal09} also takes in an initial dictionary $\D_0$ and solves for $\Rr_0$ via some sparse registration algorithm (again, we used LARS). Rather than directly solving for an updated $\D$, the online method creates a rank one update to $\D_0$ using the sparse columns of $\Rr_0$ and the corresponding rows of $X$. This update acts as a form of gradient descent while iteratively minimizing the objective $\|X-\D\Rr\|_F^2$ over a set number of iterations.\\
+
+\noindent We show the results of applying the methods described above in comparison with the weakly-$\alpha$ solution from Section~\ref{sec:recentresults} over 25 steps. We generate a random design matrix $X$ as well as an initial $\D_0$ and then generate the best sparse registration $\R$ and dictionary $\D$ according the three algorithms in an attempt to minimize the SMLR objective. The results of this exploration are summarized in Figure~\ref{fig:smlr}.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.65\textwidth]{src/sparse_MLR_greedy_online.png}
+\caption{Comparison of three separate algorithms in the solution of SMLR}
+\label{fig:smlr}
+\end{figure}
+
+\subsection{Performance of Our Algorithm}
+
+As shown in Figure~\ref{fig:ouralg}, our algorithm improves on the naive bound we described above. This is a great first step for us as we can see that our proposed method of minimizing the reconstruction error of a given design matrix by a dictionary of learned basis vectors and a sparse registration. We're encouraged to continue to refine and develop this method further now that we have it in place. Good things are ahead!
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.65\textwidth]{src/our_alg.png}
+\caption{The performance of our proposed algorithm in comparison to a naive bound}
+\label{fig:ouralg}
+\end{figure}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
