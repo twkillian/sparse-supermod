@@ -1,0 +1,197 @@
+\documentclass{article}
+\usepackage{amsmath, graphicx, amsfonts, caption, subfig, keyval, algorithm, algorithmic}
+\usepackage[margin=0.75in]{geometry}
+\captionsetup{justification=centering}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\X}{\mathcal{X}}
+
+\begin{document}
+
+\title{\vspace{-3cm}TWK Literature Reviews for Sparse Supermod}
+\author{Taylor Killian}
+\maketitle
+
+\section{Boutsidis, et. al. 2015}
+
+\subsubsection*{What is the problem?}
+\begin{itemize}
+\item Definition of {\it weak-$\alpha$-supermodularity} for set functions 
+\item Evaulate a greedy algorithm based on this definition in determining a minimal solution
+\end{itemize}
+Submodular function: $$f(S \cup T) - f(S) \geq f(P \cup T) - f(P), \qquad \text{ for } S\subseteq P$$
+Supermodular beginnings: $$ f(S \cup T) \leq f(S) \Rightarrow f(S) - f(S \cup T)\text{ is the reduction in }f\text{ by adding } T$$
+Then the average gain of adding elements of $T$ {\it sequentially} is $\frac{[f(S) - f(S\cup T)]}{|T\setminus S|}$. One hopes that there exists an element $i\in T\setminus S$ such that $f(S)-f(S\cup\{i\}) \geq \frac{[f(S) - f(S\cup T)]}{|T\setminus S|}$. In general this is not possible since the elements of $T$ are not independent. This is, however a feature of supermodular functions (Lemma 1).
+\ \\
+\ \\
+Supermodular definition: {\it A set function $f(S) : 2^{[n]} \rightarrow\R_+$ is said to be supermodular if for any two sets $S,T\subseteq[n]$} $$f(S\cap T)+f(S\cup T) \geq f(S) + f(T)$$
+Extends to definition of {\it weak-$\alpha$-supermodularity.} \quad {\it A non-negative, non-increasing, set function $f(S):2^{[n]}\rightarrow\R_+$ is said to be weakly-$\alpha$-supermodular if there exists $\alpha\geq1$ such that for any two sets $S,T\in[n]$:} $$f(S)-f(S\cup T)\leq\alpha|T\setminus S|\max_{i\in T\setminus S}[f(S)-f(S\cup\{i\})]$$
+
+\subsubsection*{Why is it important?}
+\begin{itemize}
+\item Provides a conversant analog to the submodular formulation in a few select problems. (Most particularly that of Sparse Multiple Linear Regression (SMLR))
+\item (In general, I have no idea why supermodularity is an improvement over submodularity...)
+\end{itemize}
+
+\subsubsection*{Why is it hard?}
+\begin{itemize}
+\item Sparse combinatorial optimization based on cardinality constraints, hard to minimize in general
+\end{itemize}
+
+\subsubsection*{Why existing solutions do not work?}
+\begin{itemize}
+\item Not all problems that are related through submodularity can be redefined as supermodular
+\item The average gain of adding elements of $T$ {\it sequentially} is $\frac{[f(S) - f(S\cup T)]}{|T\setminus S|}$. One hopes that there exists an element $i\in T\setminus S$ such that $f(S)-f(S\cup\{i\}) \geq \frac{[f(S) - f(S\cup T)]}{|T\setminus S|}$. In general this is not possible since the elements of $T$ are not independent. This is, however a feature of supermodular functions (Lemma 1).
+\end{itemize}
+
+\subsubsection*{What is the core intuition for the solution?}
+\begin{itemize}
+\item That a non-increasing supermodular function is {\it weakly-$\alpha$-supermodular} with $\alpha=1$
+\item Many of the underlying results depend on those of referenced papers, intuition is built through the literature
+\end{itemize}
+
+\subsubsection*{Solution step-by-step?}
+\begin{itemize}
+\item Iteratively add the element that minimizes $f$ for each step up to the size of $\alpha k \ln (f(S_0)/E)$ (see Thm 1)
+\item To show the bounds on supermodular minimization, there is some construction toward Sparse Regression and Column Subset Selection where the intermediate results build toward the claim set out in the abstract.
+\end{itemize}
+
+\subsubsection*{Does the paper prove its claims?}
+\begin{itemize}
+\item It does walk through the construction of 
+\end{itemize}
+
+\subsubsection*{Exact setup of analysis/experiments}
+\begin{itemize}
+\item Evaluates Clustering as a supermodular problem as introduction of methodology of general analysis
+\item Builds further evidence for its results via SMLR, Sparse Regression, and Column Subset Selection (relying heavily on literature).
+\item Key result is in improvement of Natarajan
+\end{itemize}
+
+\subsubsection*{Are there any gaps in the logic/proof?}
+\begin{itemize}
+\item Jumps between full clustering objective being supermod. to constrained objective being supermod. (Lemma 2)
+\item No proof for Lemma 6
+\end{itemize}
+
+\subsubsection*{Possible next steps}
+\begin{itemize}
+\item Determine exact or strong supermodularity expressions for a general (or as general as we can go) set function
+\item Applying results of this paper empirically.
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Singer, Balkanski, et. al. 2016}
+
+\subsubsection*{What is the problem?}
+\begin{itemize}
+\item Develops a new model of two-stage submodular maximization, learning sparse combinatorial representations.
+\item Multi-objective summarization
+\end{itemize}
+
+\subsubsection*{Why is it important?}
+\begin{itemize}
+\item Provides a richer, more general, framework for submodular maximization
+\item Allows one to solve structured/hierarchical problems where the underlying functions are submodular themselves, a complication that causes the two-stage objective to be no longer submodular.
+\end{itemize}
+
+\subsubsection*{Why is it hard?}
+\begin{itemize}
+\item If underlying functions are submodular, the approximation guarantees of the greedy algorithms no longer hold when subset selection (choosing $S$ such that $|S|<l$) occurs at a higher stage.
+\end{itemize}
+
+\subsubsection*{Why existing solutions do not work?}
+\begin{itemize}
+\item See above
+\end{itemize}
+
+\subsubsection*{What is the core intuition for the solution?}
+\begin{itemize}
+\item Continuous relaxation of two-stage problem, being able to apply continuous greedy algorithm
+\end{itemize}
+
+\subsubsection*{Solution step-by-step?}
+\begin{itemize}
+\item Two approaches, continuous relaxation where fractional solutions are interpreted as correlated distributions AND (when $k$ is small) local search which initializes a solution suboptimally swapping elements to iteratively improve a potential function
+\item Continuous greedy algorithm provides fractional solution, mitigated by novel randomized rounding method
+\end{itemize}
+
+\subsubsection*{Does the paper prove its claims?}
+\begin{itemize}
+\item Lemma 3.1 justifies the use of the continuous greedy algorithm
+\item Glosses over dependent rounding...
+\end{itemize}
+
+\subsubsection*{Exact setup of analysis/experiments}
+\begin{itemize}
+\item Two experiments of both methods, one on a set of images, the other on a set of Wikipedia pages.
+\item Functions $f_i$ are coverage functions for the Wikipedia data set, more general functions for the image data set
+\end{itemize}
+
+\subsubsection*{Are there any gaps in the logic/proof?}
+\begin{itemize}
+\item Not that I could see, the paper is pretty complete and self contained (much of the logic underlying the intuition is moved to the appendix)
+\end{itemize}
+
+\subsubsection*{Possible next steps}
+\begin{itemize}
+\item In view of the restricted Indian Buffet Process... What if we let k differ accross each underlying function $f_j$?
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+%\section{Doshi-Velez, Williamson, 2015}
+%\subsubsection*{What is the problem?}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{Why is it important?}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{Why is it hard?}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{Why existing solutions do not work?}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{What is the core intuition for the solution?}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{Solution step-by-step?}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{Does the paper prove its claims?}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{Exact setup of analysis/experiments}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{Are there any gaps in the logic/proof?}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+%
+%\subsubsection*{Possible next steps}
+%\begin{itemize}
+%\item da
+%\end{itemize}
+
+
+\end{document}
